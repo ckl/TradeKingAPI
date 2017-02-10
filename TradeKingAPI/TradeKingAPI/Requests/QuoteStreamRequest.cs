@@ -21,15 +21,18 @@ namespace TradeKingAPI.Requests
 
         private WebResponse _response;
         private StreamReader _streamReader;
+        private List<string> _tickers;
 
-        public QuoteStreamRequest()
+        public QuoteStreamRequest(List<string> tickers)
         {
             _requestHandler = new OAuthRequestHandler();
+            _tickers = tickers;
         }
 
         public async void Execute(Action<List<StreamDataItem>> callback)
         {
-            _response = await _requestHandler.ExecuteRequest<HttpWebResponse>("market/quotes.json?symbols=GDQMF,AIRRF,CANWF,SSPXF", null);
+            var url = "market/quotes.json?symbols=" + string.Join(",", _tickers);
+            _response = await _requestHandler.ExecuteRequest<HttpWebResponse>(url, null);
             var responseStream = _response.GetResponseStream();
 
             if (responseStream != null)

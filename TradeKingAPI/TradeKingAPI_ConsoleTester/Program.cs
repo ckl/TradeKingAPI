@@ -18,9 +18,9 @@ namespace TradeKing_ConsoleTester
             {
                 var title = "TradeKing Console App";
 
-                Console.WriteLine("-", title.Length);
+                Console.WriteLine(new string('-', title.Length));
                 Console.WriteLine(title);
-                Console.WriteLine("-", title.Length);
+                Console.WriteLine(new string('-', title.Length));
 
                 Console.WriteLine("[1] Add OAuth Keys");
                 Console.WriteLine("[2] Add/remove ticker to watch list");
@@ -35,6 +35,7 @@ namespace TradeKing_ConsoleTester
                     case "1":
                         break;
                     case "2":
+                        AddRemoveTickers();
                         break;
                     case "3":
                         StreamingData_EntryPoint();
@@ -48,11 +49,63 @@ namespace TradeKing_ConsoleTester
             }
         }
 
+        private static void AddRemoveTickers()
+        {
+            List<string> tickers;
+
+            using (var db = new SqliteWrapper())
+            {
+                string line = string.Empty;
+
+                while (true)
+                {
+                    tickers = db.GetTickers();
+
+                    for (int i = 0; i < tickers.Count; ++i)
+                    {
+                        Console.WriteLine("[{0}] {1}", i + 1, tickers[i]);
+                    }
+
+                    Console.WriteLine("(A TICKER / D #) >> ");
+                    line = Console.ReadLine();
+
+                    if (string.IsNullOrWhiteSpace(line))
+                    {
+                        break;
+                    }
+
+                    var tokens = line.Split(' ');
+                    var action = tokens[0];
+                    var ticker = tokens[1];
+
+                    switch (action.ToUpper())
+                    {
+                        case "A":
+                            db.AddTicker(ticker.ToUpper());
+                            break;
+                        case "D":
+                            var i = Convert.ToInt32(ticker);
+                            db.DeleteTicker(tickers[i - 1]);
+                            break;
+                        default:
+                            break;
+                    }
+                } 
+            }
+        }
+
         private static void StreamingData_EntryPoint()
         {
             var tokenSource = new CancellationTokenSource();
             var ct = tokenSource.Token;
-            var quoteStream = new QuoteStreamRequest(); ;
+            List<string> tickers;
+
+            using (var db = new SqliteWrapper())
+            {
+                tickers = db.GetTickers();
+            }
+
+            var quoteStream = new QuoteStreamRequest(tickers); ;
 
             var task = Task.Factory.StartNew(() =>
             {
@@ -107,7 +160,7 @@ namespace TradeKing_ConsoleTester
                             int askSz = Convert.ToInt32(quote.Asksz);
                             int bidSz = Convert.ToInt32(quote.Bidsz);
 
-                            Console.WriteLine("{0} [Qu] {1} Ask:  {2} Bid: {3} AskSz: {4} BidSz: {5}", time, ticker.PadRight(5, ' '), quote.Ask.PadRight(6, ' '), quote.Bid.PadRight(6, ' '), askSz.ToString("N0").PadRight(9, ' '), bidSz.ToString("N0"));
+                            Console.WriteLine("{0} [Qu] {1} Ask:  {2} Bid: {3} AskSz: {4} BidSz: {5}", time, ticker.PadRight(5, ' '), quote.Ask.PadRight(6, ' '), quote.Bid.PadRight(5, ' '), askSz.ToString("N0").PadRight(9, ' '), bidSz.ToString("N0"));
 
                             using (var db = new SqliteWrapper())
                             {
@@ -117,7 +170,7 @@ namespace TradeKing_ConsoleTester
                         else if (item is Trade)
                         {
                             Trade trade = (Trade)item;
-                            Console.WriteLine("{0} [Tr] {1} Last: {2} Vol: {3}", time, ticker.PadRight(5, ' '), trade.Last.PadRight(6, ' '), trade.Vl);
+                            Console.WriteLine("{0} [Tr] {1} Last: {2} Vol: {3}", time, ticker.PadRight(6, ' '), trade.Last.PadRight(5, ' '), trade.Vl);
 
                             using (var db = new SqliteWrapper())
                             {

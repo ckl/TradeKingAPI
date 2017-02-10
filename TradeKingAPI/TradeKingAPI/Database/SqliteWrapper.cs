@@ -67,7 +67,6 @@ namespace TradeKingAPI.Database
 
         public OAuthKeys GetOAuthKeys()
         {
-
             string sql = "SELECT * FROM OAuthKeys";
             using (SQLiteCommand command = new SQLiteCommand(sql, _dbConnection))
             {
@@ -105,6 +104,41 @@ namespace TradeKingAPI.Database
             }
         }
 
+        public List<string> GetTickers()
+        {
+            string sql = "SELECT * FROM Tickers ORDER BY Ticker";
+            using (SQLiteCommand command = new SQLiteCommand(sql, _dbConnection))
+            {
+                var tickers = new List<string>();
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        tickers.Add(reader["Ticker"].ToString());
+                    }
+                }
+
+                return tickers;
+            }
+        }
+
+        public void AddTicker(string ticker, string exchange=null)
+        {
+            if (string.IsNullOrEmpty(exchange))
+                exchange = "";
+
+            string sql = string.Format("INSERT INTO Tickers (Ticker, Exchange) VALUES ('{0}', '{1}')", ticker, exchange);
+
+            ExecuteNonQuery(sql);
+        }
+
+        public void DeleteTicker(string ticker)
+        {
+            string sql = string.Format("DELETE FROM Tickers WHERE Ticker = '{0}'", ticker);
+
+            ExecuteNonQuery(sql);
+        }
+
         public void SaveStreamQuote(Quote quote)
         {
             string sql = string.Format("INSERT INTO StreamData (Ask, AskSize, Bid, BidSize, DateTime, QuoteCondition, Ticker, TimeStamp, DataType) VALUES " +
@@ -119,10 +153,7 @@ namespace TradeKingAPI.Database
                                         "Quote"
                                         );
 
-            using (SQLiteCommand command = new SQLiteCommand(sql, _dbConnection))
-            {
-                command.ExecuteNonQuery();
-            }
+            ExecuteNonQuery(sql);
         }
 
         public void SaveStreamTrade(Trade trade)
@@ -139,10 +170,7 @@ namespace TradeKingAPI.Database
                                          Convert.ToDecimal(trade.Vwap)
                                          );
 
-            using (SQLiteCommand command = new SQLiteCommand(sql, _dbConnection))
-            {
-                command.ExecuteNonQuery();
-            }
+            ExecuteNonQuery(sql);
         }
 
         private void CreateOAuthKeyTable()
@@ -154,10 +182,17 @@ namespace TradeKingAPI.Database
                                 TokenSecret VARCHAR(64)
                              )";
 
-            using (SQLiteCommand command = new SQLiteCommand(sql, _dbConnection))
-            {
-                command.ExecuteNonQuery();
-            }
+            ExecuteNonQuery(sql);
+        }
+
+        private void CreateTickerTable()
+        {
+            string sql = @"CREATE TABLE IF NOT EXISTS Tickers (
+                                Ticker VARCHAR(8),
+                                Exchange VARCHAR(32),
+                             )";
+
+            ExecuteNonQuery(sql);
         }
 
         private void CreateStreamDataTable()
@@ -181,6 +216,11 @@ namespace TradeKingAPI.Database
                                 VolumeWeight INTEGER
                              )";
 
+            ExecuteNonQuery(sql);
+        }
+
+        private void ExecuteNonQuery(string sql)
+        {
             using (SQLiteCommand command = new SQLiteCommand(sql, _dbConnection))
             {
                 command.ExecuteNonQuery();

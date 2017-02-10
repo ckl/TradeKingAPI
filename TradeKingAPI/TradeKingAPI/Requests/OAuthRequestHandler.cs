@@ -45,7 +45,7 @@ namespace TradeKingAPI.Requests
                 TokenSecret = _oauthKeys.TokenSecret
             };
 
-            Console.WriteLine("{0} {1}", method, url);
+            //Console.WriteLine("{0} {1}", method, url);
             var request = (HttpWebRequest)WebRequest.Create(client.RequestUrl);
             request.Headers.Add("Authorization", client.GetAuthorizationHeader());
             var response = await request.GetResponseAsync();
