@@ -17,6 +17,7 @@ namespace TradeKingAPI.Requests
     {
         private int _bufferSize = 1024;
         private OAuthRequestHandler _requestHandler;
+        private bool _retry = true;
 
         private WebResponse _response;
         private StreamReader _streamReader;
@@ -83,9 +84,13 @@ namespace TradeKingAPI.Requests
                     _response.Dispose();
                     _streamReader.Close();
                     _streamReader.Dispose();
+                    _response = null;
 
-                    Thread.Sleep(1000);
-                    Execute(callback);
+                    if (_retry)
+                    {
+                        Thread.Sleep(1000);
+                        Execute(callback);
+                    }
                 }
                 catch (JsonReaderException ex)
                 {
@@ -102,6 +107,9 @@ namespace TradeKingAPI.Requests
 
         public void Close()
         {
+            Console.WriteLine("Releasing stream resources...");
+            _retry = false;
+
             _response.Close();
             _response.Dispose();
             _streamReader.Close();

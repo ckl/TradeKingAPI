@@ -17,6 +17,8 @@ namespace TradeKing_ConsoleTester
             while (true)
             {
                 var title = "TradeKing Console App";
+
+                Console.WriteLine("-", title.Length);
                 Console.WriteLine(title);
                 Console.WriteLine("-", title.Length);
 
@@ -37,6 +39,8 @@ namespace TradeKing_ConsoleTester
                     case "3":
                         StreamingData_EntryPoint();
                         break;
+                    case "4":
+                        return;
                     default:
                         Console.WriteLine("Invalid option, please select another");
                         break;
@@ -47,19 +51,17 @@ namespace TradeKing_ConsoleTester
         private static void StreamingData_EntryPoint()
         {
             var tokenSource = new CancellationTokenSource();
-            CancellationToken ct = tokenSource.Token;
+            var ct = tokenSource.Token;
+            var quoteStream = new QuoteStreamRequest(); ;
 
             var task = Task.Factory.StartNew(() =>
             {
                 // Were we already canceled?
                 ct.ThrowIfCancellationRequested();
 
-                StartStreamingData(ct, tokenSource);
+                StartStreamingData(quoteStream, ct, tokenSource);
                 
-            }, tokenSource.Token); // Pass same token to StartNew.
-
-
-            //tokenSource.Cancel();
+            }, tokenSource.Token); 
 
             try
             {
@@ -69,9 +71,7 @@ namespace TradeKing_ConsoleTester
                 if (string.IsNullOrWhiteSpace(exit))
                 {
                     Console.WriteLine("Cancel requested");
-                    //quoteStream.Close();
                     tokenSource.Cancel();
-                    //break;
                 }
             }
             finally
@@ -79,22 +79,21 @@ namespace TradeKing_ConsoleTester
                 tokenSource.Dispose();
             }
 
-            Console.WriteLine("Cancelling2...");
+            quoteStream.Close();
+            quoteStream = null;
         }
 
-        private static void StartStreamingData(CancellationToken cancelToken, CancellationTokenSource tokenSource)
+        private static void StartStreamingData(QuoteStreamRequest quoteStream, CancellationToken cancelToken, CancellationTokenSource tokenSource)
         {
-            QuoteStreamRequest quoteStream = new QuoteStreamRequest(); ;
             Task.Run(() => {
                 Console.WriteLine("Starting data stream, press enter to cancel...");
-                // Poll on this property if you have to do
-                // other cleanup before throwing.
+
+                // Poll on this property if you have to do other cleanup before throwing.
                 if (cancelToken.IsCancellationRequested)
                 {
-                    // Clean up here, then...
-                    Console.WriteLine("Cancelling...");
                     cancelToken.ThrowIfCancellationRequested();
                 }
+
                 quoteStream.Execute((items) => {
 
                     foreach (var item in items)
@@ -128,18 +127,6 @@ namespace TradeKing_ConsoleTester
                     }
                 });
             });
-
-            //while (true)
-            //{
-            //    var exit = Console.ReadLine();
-            //    if (string.IsNullOrWhiteSpace(exit))
-            //    {
-            //        Console.WriteLine("Cancel requested");
-            //        quoteStream.Close();
-            //        tokenSource.Cancel();
-            //        break;
-            //    }
-            //}
         }
     }
 }
