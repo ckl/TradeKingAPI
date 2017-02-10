@@ -18,6 +18,9 @@ namespace TradeKingAPI.Requests
         private int _bufferSize = 1024;
         private OAuthRequestHandler _requestHandler;
 
+        private WebResponse _response;
+        private StreamReader _streamReader;
+
         public QuoteStreamRequest()
         {
             _requestHandler = new OAuthRequestHandler();
@@ -25,20 +28,20 @@ namespace TradeKingAPI.Requests
 
         public async void Execute(Action<List<StreamDataItem>> callback)
         {
-            var response = await _requestHandler.ExecuteRequest<HttpWebResponse>("market/quotes.json?symbols=GDQMF,AIRRF,CANWF,SSPXF", null);
-            var responseStream = response.GetResponseStream();
+            _response = await _requestHandler.ExecuteRequest<HttpWebResponse>("market/quotes.json?symbols=GDQMF,AIRRF,CANWF,SSPXF", null);
+            var responseStream = _response.GetResponseStream();
 
             if (responseStream != null)
             {
-                var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+                _streamReader = new StreamReader(responseStream, Encoding.UTF8);
                 var read = new char[_bufferSize];
                 string str = null;
 
                 try
                 {
-                    while (!streamReader.EndOfStream)
+                    while (!_streamReader.EndOfStream)
                     {
-                        var count = streamReader.Read(read, 0, _bufferSize);
+                        var count = _streamReader.Read(read, 0, _bufferSize);
                         str = new string(read, 0, count);
 
                         BaseResponse item = null;
@@ -66,20 +69,20 @@ namespace TradeKingAPI.Requests
                         }
                     }
 
-                    response.Close();
-                    response.Dispose();
-                    streamReader.Close();
-                    streamReader.Dispose();
+                    _response.Close();
+                    _response.Dispose();
+                    _streamReader.Close();
+                    _streamReader.Dispose();
 
                     Console.WriteLine("Stream is closed");
                 }
                 catch (IOException ex)
                 {
                     // TK API closed the connection, cleanup and retry in 1 second
-                    response.Close();
-                    response.Dispose();
-                    streamReader.Close();
-                    streamReader.Dispose();
+                    _response.Close();
+                    _response.Dispose();
+                    _streamReader.Close();
+                    _streamReader.Dispose();
 
                     Thread.Sleep(1000);
                     Execute(callback);
@@ -95,6 +98,14 @@ namespace TradeKingAPI.Requests
             }
             else
                 throw new Exception("No response was returned from the server.");
+        }
+
+        public void Close()
+        {
+            _response.Close();
+            _response.Dispose();
+            _streamReader.Close();
+            _streamReader.Dispose();
         }
     }
 }

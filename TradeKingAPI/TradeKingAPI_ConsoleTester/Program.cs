@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using TradeKingAPI.Database;
 using TradeKingAPI.Models.Streaming;
@@ -13,10 +14,89 @@ namespace TradeKing_ConsoleTester
     {
         static void Main(string[] args)
         {
+            while (true)
+            {
+                var title = "TradeKing Console App";
+                Console.WriteLine(title);
+                Console.WriteLine("-", title.Length);
+
+                Console.WriteLine("[1] Add OAuth Keys");
+                Console.WriteLine("[2] Add/remove ticker to watch list");
+                Console.WriteLine("[3] Stream watch list data");
+                Console.WriteLine("[4] Exit");
+
+                Console.Write(">> ");
+                var choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        break;
+                    case "2":
+                        break;
+                    case "3":
+                        StreamingData_EntryPoint();
+                        break;
+                    default:
+                        Console.WriteLine("Invalid option, please select another");
+                        break;
+                }
+            }
+        }
+
+        private static void StreamingData_EntryPoint()
+        {
+            var tokenSource = new CancellationTokenSource();
+            CancellationToken ct = tokenSource.Token;
+
+            var task = Task.Factory.StartNew(() =>
+            {
+                // Were we already canceled?
+                ct.ThrowIfCancellationRequested();
+
+                StartStreamingData(ct, tokenSource);
+                
+            }, tokenSource.Token); // Pass same token to StartNew.
+
+
+            //tokenSource.Cancel();
+
+            try
+            {
+                task.Wait();
+
+                var exit = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(exit))
+                {
+                    Console.WriteLine("Cancel requested");
+                    //quoteStream.Close();
+                    tokenSource.Cancel();
+                    //break;
+                }
+            }
+            finally
+            {
+                tokenSource.Dispose();
+            }
+
+            Console.WriteLine("Cancelling2...");
+        }
+
+        private static void StartStreamingData(CancellationToken cancelToken, CancellationTokenSource tokenSource)
+        {
+            QuoteStreamRequest quoteStream = new QuoteStreamRequest(); ;
             Task.Run(() => {
-                Console.WriteLine("Starting data stream...");
-                var x = new QuoteStreamRequest();
-                x.Execute((items) => {
+                Console.WriteLine("Starting data stream, press enter to cancel...");
+                // Poll on this property if you have to do
+                // other cleanup before throwing.
+                if (cancelToken.IsCancellationRequested)
+                {
+                    // Clean up here, then...
+                    Console.WriteLine("Cancelling...");
+                    cancelToken.ThrowIfCancellationRequested();
+                }
+                quoteStream.Execute((items) => {
+
                     foreach (var item in items)
                     {
                         var ticker = string.Format("[{0}]", item.Symbol);
@@ -49,14 +129,17 @@ namespace TradeKing_ConsoleTester
                 });
             });
 
-            while (true)
-            {
-                var line = Console.ReadLine();
-                if (line == ".")
-                {
-                    break;
-                }
-            }
+            //while (true)
+            //{
+            //    var exit = Console.ReadLine();
+            //    if (string.IsNullOrWhiteSpace(exit))
+            //    {
+            //        Console.WriteLine("Cancel requested");
+            //        quoteStream.Close();
+            //        tokenSource.Cancel();
+            //        break;
+            //    }
+            //}
         }
     }
 }

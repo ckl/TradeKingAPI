@@ -22,6 +22,11 @@ namespace TradeKingAPI.Requests
             {
                 Console.WriteLine("Reading OAuth keys from SQLite...");
                 _oauthKeys = sqlite.GetOAuthKeys();
+
+                if (_oauthKeys == null)
+                {
+                    throw new NullReferenceException("No OAuth Keys found");
+                }
             }
         }
 

@@ -71,19 +71,36 @@ namespace TradeKingAPI.Database
             string sql = "SELECT * FROM OAuthKeys";
             using (SQLiteCommand command = new SQLiteCommand(sql, _dbConnection))
             {
+                var keys = new List<OAuthKeys>();
                 using (SQLiteDataReader reader = command.ExecuteReader())
                 {
-                    reader.Read();
-
-                    var keys = new OAuthKeys
+                    while (reader.Read())
                     {
-                        ConsumerKey = reader["ConsumerKey"].ToString(),
-                        ConsumerSecret = reader["ConsumerSecret"].ToString(),
-                        Token = reader["Token"].ToString(),
-                        TokenSecret = reader["TokenSecret"].ToString(),
-                    };
+                        var key = new OAuthKeys
+                        {
+                            ConsumerKey = reader["ConsumerKey"].ToString(),
+                            ConsumerSecret = reader["ConsumerSecret"].ToString(),
+                            Token = reader["Token"].ToString(),
+                            TokenSecret = reader["TokenSecret"].ToString(),
+                        };
 
-                    return keys;
+                        keys.Add(key);
+                    }
+
+                    if (keys.Count == 0)
+                    {
+                        // TODO
+                        return null;
+                    }
+                    else if (keys.Count == 1)
+                    {
+                        return keys[0];
+                    }
+                    else
+                    {
+                        // TODO: return all keys or display all and allow user to select?
+                        return keys[0];
+                    }
                 }
             }
         }
