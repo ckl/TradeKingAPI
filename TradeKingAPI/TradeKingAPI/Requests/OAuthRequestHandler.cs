@@ -1,11 +1,14 @@
-﻿using OAuth;
+﻿using Newtonsoft.Json;
+using OAuth;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using TradeKingAPI.Base.Responses;
 using TradeKingAPI.Database;
 using TradeKingAPI.Models.Auth;
 using TradeKingAPI.Models.Responses;
@@ -30,7 +33,40 @@ namespace TradeKingAPI.Requests
             }
         }
 
-        public async Task<WebResponse> ExecuteRequest<T>(string url, List<string> parameters, string method="GET")
+        public async Task<T> ExecuteRequest<T>(string url, string method="GET")
+        {
+            var client = new OAuthRequest
+            {
+                Method = method,
+                Type = OAuthRequestType.RequestToken,
+                SignatureMethod = OAuthSignatureMethod.HmacSha1,
+                ConsumerKey = _oauthKeys.ConsumerKey,
+                ConsumerSecret = _oauthKeys.ConsumerSecret,
+                RequestUrl = $"https://api.tradeking.com/v1/" + url,
+                Version = "1.0a",
+                Token = _oauthKeys.Token,
+                TokenSecret = _oauthKeys.TokenSecret
+            };
+
+            var request = (HttpWebRequest)WebRequest.Create(client.RequestUrl);
+            request.Headers.Add("Authorization", client.GetAuthorizationHeader());
+            var response = await request.GetResponseAsync();
+
+            var responseStream = response.GetResponseStream();
+            T baseResponse = default(T);
+
+            if (responseStream != null)
+            {
+                var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+
+                var data = await streamReader.ReadToEndAsync();
+                baseResponse = JsonConvert.DeserializeObject<T>(data);
+            }
+
+            return baseResponse;
+        }
+
+        public async Task<WebResponse> ExecuteStreamRequest<T>(string url, string method="GET")
         {
             var client = new OAuthRequest
             {
@@ -45,7 +81,6 @@ namespace TradeKingAPI.Requests
                 TokenSecret = _oauthKeys.TokenSecret
             };
 
-            //Console.WriteLine("{0} {1}", method, url);
             var request = (HttpWebRequest)WebRequest.Create(client.RequestUrl);
             request.Headers.Add("Authorization", client.GetAuthorizationHeader());
             var response = await request.GetResponseAsync();

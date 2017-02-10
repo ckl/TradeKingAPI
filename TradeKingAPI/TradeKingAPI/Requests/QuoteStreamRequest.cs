@@ -32,7 +32,7 @@ namespace TradeKingAPI.Requests
         public async void Execute(Action<List<StreamDataItem>> callback)
         {
             var url = "market/quotes.json?symbols=" + string.Join(",", _tickers);
-            _response = await _requestHandler.ExecuteRequest<HttpWebResponse>(url, null);
+            _response = await _requestHandler.ExecuteStreamRequest<HttpWebResponse>(url);
             var responseStream = _response.GetResponseStream();
 
             if (responseStream != null)

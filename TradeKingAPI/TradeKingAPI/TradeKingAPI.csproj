@@ -107,6 +107,7 @@
     <Compile Include="Models\WatchList\Watchlistitem.cs" />
     <Compile Include="Models\WatchList\Watchlists.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Requests\NewsRequest.cs" />
     <Compile Include="Requests\OAuthRequestHandler.cs" />
     <Compile Include="Requests\QuoteStreamRequest.cs" />
   </ItemGroup>

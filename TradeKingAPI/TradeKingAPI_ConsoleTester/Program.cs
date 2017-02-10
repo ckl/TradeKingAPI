@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TradeKingAPI.Database;
+using TradeKingAPI.Models.Article;
 using TradeKingAPI.Models.Streaming;
 using TradeKingAPI.Requests;
 
@@ -14,6 +15,34 @@ namespace TradeKing_ConsoleTester
     {
         static void Main(string[] args)
         {
+            DisplayMenu();
+
+            //GetNews();
+
+            Console.ReadLine();
+        }
+
+        private static async void GetNews()
+        {
+            using (var db = new SqliteWrapper())
+            {
+                var tickers = db.GetTickers();
+
+                foreach (var ticker in tickers)
+                {
+                    var x = new NewsRequest(new List<string> { ticker });
+                    var articles = await x.Execute();
+
+                    Console.WriteLine(new string('-', ticker.Length));
+                    Console.WriteLine(ticker);
+                    Console.WriteLine(new string('-', ticker.Length));
+                    Console.WriteLine(string.Join("\n\n", articles.Select(a => a.Headline)));
+                }
+            }
+        }
+
+        private static void DisplayMenu()
+        {
             while (true)
             {
                 var title = "TradeKing Console App";
@@ -22,7 +51,7 @@ namespace TradeKing_ConsoleTester
                 Console.WriteLine(title);
                 Console.WriteLine(new string('-', title.Length));
 
-                Console.WriteLine("[1] Add OAuth Keys");
+                Console.WriteLine("[1] Add/Remove OAuth Keys");
                 Console.WriteLine("[2] Add/remove ticker to watch list");
                 Console.WriteLine("[3] Stream watch list data");
                 Console.WriteLine("[4] Exit");
