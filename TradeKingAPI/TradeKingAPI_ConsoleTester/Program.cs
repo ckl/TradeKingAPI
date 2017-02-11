@@ -15,16 +15,20 @@ namespace TradeKing_ConsoleTester
     {
         static void Main(string[] args)
         {
-            DisplayMenu();
+            using (var db = DbFactory.GetDbSource())
+            {
+                var x = db.GetAllStreamQuotes();
+                var y = db.GetAllStreamTrades();
+            }
+
+            //DisplayMenu();
 
             //GetNews();
-
-            Console.ReadLine();
         }
 
         private static async void GetNews()
         {
-            using (var db = new SqliteWrapper())
+            using (var db = DbFactory.GetDbSource())
             {
                 var tickers = db.GetTickers();
 
@@ -39,6 +43,8 @@ namespace TradeKing_ConsoleTester
                     Console.WriteLine(string.Join("\n\n", articles.Select(a => a.Headline)));
                 }
             }
+
+            Console.ReadLine();
         }
 
         private static void DisplayMenu()
@@ -82,7 +88,7 @@ namespace TradeKing_ConsoleTester
         {
             List<string> tickers;
 
-            using (var db = new SqliteWrapper())
+            using (var db = DbFactory.GetDbSource())
             {
                 string line = string.Empty;
 
@@ -119,7 +125,7 @@ namespace TradeKing_ConsoleTester
                         default:
                             break;
                     }
-                } 
+                }
             }
         }
 
@@ -129,12 +135,12 @@ namespace TradeKing_ConsoleTester
             var ct = tokenSource.Token;
             List<string> tickers;
 
-            using (var db = new SqliteWrapper())
+            using (var db = DbFactory.GetDbSource())
             {
                 tickers = db.GetTickers();
             }
 
-            var quoteStream = new QuoteStreamRequest(tickers); ;
+            var quoteStream = new QuoteStreamRequest(tickers);
 
             var task = Task.Factory.StartNew(() =>
             {
@@ -191,7 +197,7 @@ namespace TradeKing_ConsoleTester
 
                             Console.WriteLine("{0} [Qu] {1} Ask:  {2} Bid: {3} AskSz: {4} BidSz: {5}", time, ticker.PadRight(5, ' '), quote.Ask.PadRight(6, ' '), quote.Bid.PadRight(5, ' '), askSz.ToString("N0").PadRight(9, ' '), bidSz.ToString("N0"));
 
-                            using (var db = new SqliteWrapper())
+                            using (var db = DbFactory.GetDbSource())
                             {
                                 db.SaveStreamQuote(quote);
                             }
@@ -201,7 +207,7 @@ namespace TradeKing_ConsoleTester
                             Trade trade = (Trade)item;
                             Console.WriteLine("{0} [Tr] {1} Last: {2} Vol: {3}", time, ticker.PadRight(6, ' '), trade.Last.PadRight(5, ' '), trade.Vl);
 
-                            using (var db = new SqliteWrapper())
+                            using (var db = DbFactory.GetDbSource())
                             {
                                 db.SaveStreamTrade(trade);
                             }

@@ -55,7 +55,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base\BaseResponse.cs" />
+    <Compile Include="Database\DbFactory.cs" />
     <Compile Include="Database\SqliteWrapper.cs" />
+    <Compile Include="Interfaces\IDbSource.cs" />
     <Compile Include="Interfaces\IResponse.cs" />
     <Compile Include="Interfaces\IService.cs" />
     <Compile Include="Models\Accounts\Account.cs" />

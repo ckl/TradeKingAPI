@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TradeKingAPI.Interfaces;
 using TradeKingAPI.Models.Auth;
 using TradeKingAPI.Models.Streaming;
 
 namespace TradeKingAPI.Database
 {
-    public class SqliteWrapper : IDisposable
+    public class SqliteWrapper : IDisposable, IDbSource
     {
         private string _dbDirectoryPath = @"C:\Users\" + Environment.UserName + @"\Documents\TradeKingAPI\";
         private string _sqliteDbName = "TradeKingAPI.sqlite";
@@ -34,7 +36,7 @@ namespace TradeKingAPI.Database
                 createInitialTables = true;
             }
 
-            _dbConnection = new SQLiteConnection(string.Format("Data Source={0};Version=3;", _sqliteDbPath));
+            _dbConnection = new SQLiteConnection(string.Format("Data Source={0};Version=3;datetimeformat=CurrentCulture", _sqliteDbPath));
             _dbConnection.Open();
             _disposed = false;
 
@@ -154,6 +156,63 @@ namespace TradeKingAPI.Database
                                         );
 
             ExecuteNonQuery(sql);
+        }
+
+        public IEnumerable<Quote> GetAllStreamQuotes()
+        {
+            var quotes = new List<Quote>();
+            string sql = "SELECT * FROM StreamData WHERE DataType = 'Quote' ORDER BY TimeStamp";
+
+            using (SQLiteCommand command = new SQLiteCommand(sql, _dbConnection))
+            {
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        quotes.Add(new Quote
+                        {
+                            Ask = reader["Ask"].ToString(),
+                            Asksz = reader["AskSize"].ToString(),
+                            Bid = reader["Bid"].ToString(),
+                            Bidsz = reader["BidSize"].ToString(),
+                            Datetime = reader["DateTime"].ToString(),
+                            Qcond = reader["QuoteCondition"].ToString(),
+                            Symbol = reader["Ticker"].ToString()
+                        });
+                    }
+                }
+
+                return quotes;
+            }
+        }
+
+        public IEnumerable<Trade> GetAllStreamTrades()
+        {
+            var trades = new List<Trade>();
+
+            string sql = "SELECT * FROM StreamData WHERE DataType = 'Trade' ORDER BY TimeStamp";
+
+            using (SQLiteCommand command = new SQLiteCommand(sql, _dbConnection))
+            {
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        trades.Add(new Trade
+                        {
+                            Cvol = reader["CumulativeVolume"].ToString(),
+                            Datetime = reader["DateTime"].ToString(),
+                            Last = reader["LastPrice"].ToString(),
+                            Symbol = reader["Ticker"].ToString(),
+                            Timestamp = reader["TimeStamp"].ToString(),
+                            Vl = reader["Volume"].ToString(),
+                            Vwap = reader["VolumeWeight"].ToString()
+                        });
+                    }
+                }
+
+                return trades;
+            }
         }
 
         public void SaveStreamTrade(Trade trade)

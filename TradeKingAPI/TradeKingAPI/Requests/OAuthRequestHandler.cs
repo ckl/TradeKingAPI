@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TradeKingAPI.Base.Responses;
 using TradeKingAPI.Database;
+using TradeKingAPI.Interfaces;
 using TradeKingAPI.Models.Auth;
 using TradeKingAPI.Models.Responses;
 
@@ -21,10 +22,10 @@ namespace TradeKingAPI.Requests
 
         public OAuthRequestHandler()
         {
-            using (var sqlite = new SqliteWrapper())
+            using (var db = DbFactory.GetDbSource())
             {
                 Console.WriteLine("Reading OAuth keys from SQLite...");
-                _oauthKeys = sqlite.GetOAuthKeys();
+                _oauthKeys = db.GetOAuthKeys();
 
                 if (_oauthKeys == null)
                 {
@@ -55,13 +56,15 @@ namespace TradeKingAPI.Requests
             var responseStream = response.GetResponseStream();
             T baseResponse = default(T);
 
-            if (responseStream != null)
+            if (responseStream == null)
             {
-                var streamReader = new StreamReader(responseStream, Encoding.UTF8);
-
-                var data = await streamReader.ReadToEndAsync();
-                baseResponse = JsonConvert.DeserializeObject<T>(data);
+                throw new ArgumentNullException("ResponseStream");
             }
+
+            var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+
+            var data = await streamReader.ReadToEndAsync();
+            baseResponse = JsonConvert.DeserializeObject<T>(data);
 
             return baseResponse;
         }
