@@ -112,6 +112,7 @@
     <Compile Include="Requests\NewsRequest.cs" />
     <Compile Include="Requests\OAuthRequestHandler.cs" />
     <Compile Include="Requests\QuoteStreamRequest.cs" />
+    <Compile Include="Requests\WatchListRequest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
