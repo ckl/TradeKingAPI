@@ -56,6 +56,21 @@ namespace TradeKing.Wpf.ViewModels
             }
         }
 
+        public void OnNewStreamItem(Quote quote)
+        {
+            Quotes.Add(quote);
+            GraphQuotes.Add(new QuoteDataPoint
+            {
+                Ask = Convert.ToDecimal(quote.Ask),
+                Bid = Convert.ToDecimal(quote.Bid),
+                Time = DateTime.Parse(quote.Datetime)
+            });
+        }
+
+        public void OnNewStreamItem(Trade trade)
+        {
+
+        }
 
         private double _xAxisMin = Double.MaxValue;
         private double _xAxisMax = Double.MinValue;

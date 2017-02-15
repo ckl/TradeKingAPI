@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TradeKing.Wpf.Views.UserControls;
+using TradeKingAPI.Models.Streaming;
 
 namespace TradeKing.Wpf.ViewModels
 {
