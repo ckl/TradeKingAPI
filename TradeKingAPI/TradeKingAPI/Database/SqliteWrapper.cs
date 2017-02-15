@@ -158,6 +158,34 @@ namespace TradeKingAPI.Database
             ExecuteNonQuery(sql);
         }
 
+        public IEnumerable<Quote> GetStreamQuotes(string ticker)
+        {
+            var quotes = new List<Quote>();
+            string sql = "SELECT * FROM StreamData WHERE DataType = 'Quote' AND Ticker = '" + ticker + "' ORDER BY TimeStamp";
+
+            using (SQLiteCommand command = new SQLiteCommand(sql, _dbConnection))
+            {
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        quotes.Add(new Quote
+                        {
+                            Ask = reader["Ask"].ToString(),
+                            Asksz = reader["AskSize"].ToString(),
+                            Bid = reader["Bid"].ToString(),
+                            Bidsz = reader["BidSize"].ToString(),
+                            Datetime = reader["DateTime"].ToString(),
+                            Qcond = reader["QuoteCondition"].ToString(),
+                            Symbol = reader["Ticker"].ToString()
+                        });
+                    }
+                }
+
+                return quotes;
+            }
+        }
+
         public IEnumerable<Quote> GetAllStreamQuotes()
         {
             var quotes = new List<Quote>();

@@ -32,7 +32,18 @@ namespace TradeKingAPI.Requests
         public async void Execute(Action<List<StreamDataItem>> callback)
         {
             var url = "market/quotes.json?symbols=" + string.Join(",", _tickers);
-            _response = await _requestHandler.ExecuteStreamRequest<HttpWebResponse>(url);
+
+            try
+            {
+                _response = await _requestHandler.ExecuteStreamRequest<HttpWebResponse>(url);
+            }
+            catch (WebException ex)
+            {
+                Console.WriteLine(DateTime.Now + ": Web exception: " + ex.Message);
+                DoRetry(5000, callback);
+                return;
+            }
+
             var responseStream = _response.GetResponseStream();
 
             if (responseStream != null)
@@ -83,17 +94,7 @@ namespace TradeKingAPI.Requests
                 catch (IOException ex)
                 {
                     // TK API closed the connection, cleanup and retry in 1 second
-                    _response.Close();
-                    _response.Dispose();
-                    _streamReader.Close();
-                    _streamReader.Dispose();
-                    _response = null;
-
-                    if (_retry)
-                    {
-                        Thread.Sleep(1000);
-                        Execute(callback);
-                    }
+                    DoRetry(1000, callback);
                 }
                 catch (JsonReaderException ex)
                 {
@@ -106,6 +107,30 @@ namespace TradeKingAPI.Requests
             }
             else
                 throw new Exception("No response was returned from the server.");
+        }
+
+        private void DoRetry(int msDelay, Action<List<StreamDataItem>> callback)
+        {
+            if (_response != null)
+            {
+                _response.Close();
+                _response.Dispose();
+                _response = null;
+            }
+
+            if (_streamReader != null)
+            {
+                _streamReader.Close();
+                _streamReader.Dispose();
+                _streamReader = null;
+            }
+            
+
+            if (_retry)
+            {
+                Thread.Sleep(msDelay);
+                Execute(callback);
+            }
         }
 
         public void Close()

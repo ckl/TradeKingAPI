@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="TradeKing.Wpf.Views.UserControls.TickerTabContent"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TradeKing.Wpf.Views.UserControls"
+             xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="5" />
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <oxy:Plot Grid.Row="0" Title="{Binding GraphTitle}">
+            <oxy:Plot.Axes>
+                <oxy:DateTimeAxis Position="Bottom" StringFormat="HH:mm" />
+                <oxy:LinearAxis Position="Left" Minimum="{Binding xAxisMin}" Maximum="{Binding xAxisMax}" />
+            </oxy:Plot.Axes>
+            <oxy:Plot.Series>
+                <oxy:LineSeries ItemsSource="{Binding GraphQuotes}" DataFieldX="Time" DataFieldY="Bid" StrokeThickness="1" Color="Blue"  MarkerSize="3" MarkerType="Plus" TrackerFormatString="Time: {2:yyyy-MM-dd HH:mm:ss}&#x0a;Bid: {4}"/>
+                <oxy:LineSeries ItemsSource="{Binding GraphQuotes}" DataFieldX="Time" DataFieldY="Ask" StrokeThickness="1" Color="Green"  MarkerSize="3" MarkerType="Plus" TrackerFormatString="Time: {2:yyyy-MM-dd HH:mm:ss}&#x0a;Ask: {4}"/>
+            </oxy:Plot.Series>
+        </oxy:Plot>
+
+        <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
+
+        <Grid Grid.Row="2">
+            <DataGrid CanUserSortColumns="True" AutoGenerateColumns="True" ItemsSource="{Binding Quotes}" />
+        </Grid>
+
+    </Grid>
+</UserControl>

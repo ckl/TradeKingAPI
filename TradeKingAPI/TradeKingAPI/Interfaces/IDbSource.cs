@@ -16,6 +16,7 @@ namespace TradeKingAPI.Interfaces
         void DeleteTicker(string ticker);
         void SaveStreamQuote(Quote quote);
         void SaveStreamTrade(Trade trade);
+        IEnumerable<Quote> GetStreamQuotes(string ticker);
         IEnumerable<Quote> GetAllStreamQuotes();
         IEnumerable<Trade> GetAllStreamTrades();
     }

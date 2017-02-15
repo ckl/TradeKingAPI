@@ -15,15 +15,20 @@ namespace TradeKing_ConsoleTester
     {
         static void Main(string[] args)
         {
+            DisplayMenu();
+
+            //GetNews();
+
+            //GetSavedQuotesAndTrades();
+        }
+
+        private static void GetSavedQuotesAndTrades()
+        {
             using (var db = DbFactory.GetDbSource())
             {
                 var x = db.GetAllStreamQuotes();
                 var y = db.GetAllStreamTrades();
             }
-
-            //DisplayMenu();
-
-            //GetNews();
         }
 
         private static async void GetNews()

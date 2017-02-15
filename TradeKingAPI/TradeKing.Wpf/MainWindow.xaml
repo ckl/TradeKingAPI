@@ -1,0 +1,159 @@
+﻿<Window x:Class="TradeKing.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TradeKing.Wpf"
+        xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="576" Width="1024"> <!-- 16x9 -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" /> <!-- File Menu -->
+            <RowDefinition />               <!-- Tabs and content -->
+            <RowDefinition Height="25" />   <!-- Add ticker txtbox at bottom of left column -->
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="125" MinWidth="125" />   <!-- Left pane -->
+            <ColumnDefinition Width="5"/>                     <!-- Grid Splitter -->
+            <ColumnDefinition />                              <!-- Tabs and content -->
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="0" Grid.ColumnSpan="3">
+            <Menu IsMainMenu="True" Name="menu1" VerticalAlignment="Top" Height="23">
+                <MenuItem Header="_File" />
+                <MenuItem Header="_Edit" />
+                <MenuItem Header="_View" />
+                <MenuItem Header="_Window" />
+                <MenuItem Header="_Help" />
+            </Menu>
+        </Grid>
+        
+        <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2">
+            <TextBlock>
+                SSPXF
+                <LineBreak />
+                CANWF
+                <LineBreak />
+                GDQFM
+                <LineBreak />
+                MSFT
+                <LineBreak />
+                GOOG
+                <LineBreak />
+                AAPL
+                <LineBreak />
+                KO
+                <LineBreak />
+                PEP
+                <LineBreak />
+                JNJ 
+                <LineBreak />
+                PG 
+                <LineBreak />
+                XOM
+                <LineBreak />
+                CVX
+                <LineBreak />
+                COP
+                <LineBreak />
+                PSX
+                <LineBreak />
+                INTL
+                <LineBreak />
+                AMZN
+                <LineBreak />
+            </TextBlock>
+        </Grid>
+
+        <Grid Grid.Row="4" Grid.Column="0" Height="25" VerticalAlignment="Bottom">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                <TextBox Width="Auto" MinWidth="50" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" />
+                <Button Width="Auto" MaxWidth="100">Add Ticker</Button>
+            </StackPanel>
+        </Grid>
+
+        <GridSplitter Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" Width="5" HorizontalAlignment="Stretch" />
+
+        <Grid Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" Grid.ColumnSpan="2">
+
+            <TabControl Margin="4" DataContext="{Binding TickerTabsViewModel}" ItemsSource="{Binding Tabs}">
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding TabTitle}" />
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <UserControl Content="{Binding TabContent}" />
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </TabControl>
+            
+            
+            <!--<TabControl Margin="4">
+                <TabItem Grid.Row="0" Header="SSPXF">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="5" />
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <oxy:Plot Grid.Row="0" Title="SSPXF">
+                            <oxy:Plot.Axes>
+                                <oxy:DateTimeAxis Position="Bottom" StringFormat="HH:mm" />
+                                <oxy:LinearAxis Position="Left" Minimum="{Binding SSPXFMin}" Maximum="{Binding SSPXFMax}" />
+                            </oxy:Plot.Axes>
+                            <oxy:Plot.Series>
+                                <oxy:LineSeries ItemsSource="{Binding SSPXFGraphQuotes}" DataFieldX="Time" DataFieldY="Bid" StrokeThickness="2" Color="Blue"  MarkerSize="3" MarkerType="Plus" TrackerFormatString="Time: {2:yyyy-MM-dd HH:mm:ss}&#x0a;Bid: {4}"/>
+                                <oxy:LineSeries ItemsSource="{Binding SSPXFGraphQuotes}" DataFieldX="Time" DataFieldY="Ask" StrokeThickness="2" Color="Green"  MarkerSize="3" MarkerType="Plus" TrackerFormatString="Time: {2:yyyy-MM-dd HH:mm:ss}&#x0a;Ask: {4}"/>
+                            </oxy:Plot.Series>
+                        </oxy:Plot>
+
+                        <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
+
+                        <Grid Grid.Row="2">
+                            <DataGrid CanUserSortColumns="True" AutoGenerateColumns="True" ItemsSource="{Binding SSPXFQuotes}" />
+                        </Grid>
+
+                    </Grid>
+                </TabItem>
+                
+                <TabItem Header="CANWF">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="5" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        
+                        <oxy:Plot Grid.Row="0" Title="CANWF">
+                            <oxy:Plot.Axes>
+                                <oxy:DateTimeAxis Position="Bottom" StringFormat="HH:mm" />
+                            </oxy:Plot.Axes>
+                            <oxy:Plot.Series>
+                                <oxy:LineSeries ItemsSource="{Binding CANWFQuotes}" DataFieldX="Time" DataFieldY="Bid" StrokeThickness="2" Color="Blue"  MarkerSize="3" MarkerType="Plus" TrackerFormatString="Time: {2:yyyy-MM-dd HH:mm:ss}&#x0a;Bid: {4}"/>
+                                <oxy:LineSeries ItemsSource="{Binding CANWFQuotes}" DataFieldX="Time" DataFieldY="Ask" StrokeThickness="2" Color="Green"  MarkerSize="3" MarkerType="Plus" TrackerFormatString="Time: {2:yyyy-MM-dd HH:mm:ss}&#x0a;Ask: {4}"/>
+                            </oxy:Plot.Series>
+                        </oxy:Plot>
+
+                        <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
+
+                        <Grid Grid.Row="2">
+                            <Border BorderThickness="1" Margin="4" BorderBrush="Silver">
+                                <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                                    <TextBlock Padding="4" Text="{Binding CANWFQuoteString}" />
+                                </ScrollViewer>
+                            </Border>
+                        </Grid>
+
+                    </Grid>
+                </TabItem>
+            </TabControl>-->
+        </Grid>
+
+        
+    </Grid>
+</Window>
