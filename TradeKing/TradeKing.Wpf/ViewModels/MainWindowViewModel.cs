@@ -13,7 +13,7 @@ using TradeKing.API.Models.Streaming;
 using TradeKing.API.Requests;
 using TradeKing.Wpf.ViewModels;
 
-namespace TradeKing.Wpf
+namespace TradeKing.Wpf.ViewModels
 {
     public class MainWindowViewModel 
     {
