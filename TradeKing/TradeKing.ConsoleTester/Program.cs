@@ -15,11 +15,32 @@ namespace TradeKing_ConsoleTester
     {
         static void Main(string[] args)
         {
-            DisplayMenu();
+            GetWatchLists();
+
+            //DisplayMenu();
 
             //GetNews();
 
             //GetSavedQuotesAndTrades();
+
+            Console.ReadLine();
+        }
+
+        private static async void GetWatchLists()
+        {
+            var listsReq = new WatchListsRequest();
+            var watchLists = await listsReq.Execute();
+
+            foreach (var watchList in watchLists)
+            {
+                var listReq = new WatchListRequest(watchList.Id);
+                var list = await listReq.Execute();
+
+                Console.WriteLine(watchList.Id);
+                Console.WriteLine(new string('-', watchList.Id.Length));
+
+                Console.WriteLine(string.Join("\n", list.Watchlist.Watchlistitem.OrderBy(c => c.Instrument.Sym).Select(c => c.Instrument.Sym)));
+            }
         }
 
         private static void GetSavedQuotesAndTrades()
@@ -48,8 +69,6 @@ namespace TradeKing_ConsoleTester
                     Console.WriteLine(string.Join("\n\n", articles.Select(a => a.Headline)));
                 }
             }
-
-            Console.ReadLine();
         }
 
         private static void DisplayMenu()

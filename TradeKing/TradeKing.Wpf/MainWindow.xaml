@@ -32,7 +32,16 @@
         </Grid>
         
         <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2">
-            <ListView ItemsSource="{Binding WatchList}" MouseDoubleClick="ListView_MouseDoubleClick" />
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                
+            </Grid>
+
+            <ListView Grid.Row="1" ItemsSource="{Binding WatchList}" MouseDoubleClick="ListView_MouseDoubleClick" />
         </Grid>
 
         <Grid Grid.Row="4" Grid.Column="0" Height="25" VerticalAlignment="Bottom">

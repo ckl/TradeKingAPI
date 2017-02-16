@@ -24,7 +24,6 @@ namespace TradeKing.API.Requests
         {
             var url = "market/news/search.json?symbols=" + string.Join(",", _tickers) + "&maxhits=" + maxhits.ToString();
             var resp = await _requestHandler.ExecuteRequest<ArticleResponse>(url);
-
             return resp.Response.Articles.Article.ToList();
         }
     }

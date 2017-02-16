@@ -57,6 +57,7 @@
     <Compile Include="Base\BaseResponse.cs" />
     <Compile Include="Database\DbFactory.cs" />
     <Compile Include="Database\SqliteWrapper.cs" />
+    <Compile Include="Helpers\OAuthKeyManager.cs" />
     <Compile Include="Interfaces\IDbSource.cs" />
     <Compile Include="Interfaces\IResponse.cs" />
     <Compile Include="Interfaces\IService.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="Models\Responses\StringResponse.cs" />
     <Compile Include="Models\Responses\TransactionsResponse.cs" />
     <Compile Include="Models\Responses\WatchListResponse.cs" />
+    <Compile Include="Models\Responses\WatchListsResponse.cs" />
     <Compile Include="Models\Streaming\Exch.cs" />
     <Compile Include="Models\Streaming\Quote.cs" />
     <Compile Include="Models\Streaming\QuoteResponse.cs" />
@@ -103,6 +105,9 @@
     <Compile Include="Models\Transactions\Transaction\Transaction.cs" />
     <Compile Include="Models\Transactions\Transaction\Transaction\Security.cs" />
     <Compile Include="Models\Transactions\Transaction\Transaction\Transaction2.cs" />
+    <Compile Include="Models\WatchLists\Response.cs" />
+    <Compile Include="Models\WatchLists\Watchlist.cs" />
+    <Compile Include="Models\WatchLists\Watchlists.cs" />
     <Compile Include="Models\WatchList\Instrument.cs" />
     <Compile Include="Models\WatchList\Response.cs" />
     <Compile Include="Models\WatchList\Watchlist.cs" />
@@ -113,10 +118,12 @@
     <Compile Include="Requests\OAuthRequestHandler.cs" />
     <Compile Include="Requests\QuoteStreamRequest.cs" />
     <Compile Include="Requests\WatchListRequest.cs" />
+    <Compile Include="Requests\WatchListsRequest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.104.0\build\net451\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.104.0\build\net451\System.Data.SQLite.Core.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
