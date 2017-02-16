@@ -40,5 +40,14 @@ namespace TradeKing.Wpf
 
             _viewModel.TickerTabsViewModel.RemoveTab(vm);
         }
+
+        private void TabHeader_OnLeftClick(object sender, MouseButtonEventArgs e)
+        {
+            var vm = (sender as TextBlock).DataContext as TickerTabItemViewModel;
+            if (vm == null)
+                return;
+
+            _viewModel.TickerTabsViewModel.SelectedTab.SetRead();
+        }
     }
 }

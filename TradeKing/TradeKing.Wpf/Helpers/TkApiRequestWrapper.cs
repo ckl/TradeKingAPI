@@ -48,6 +48,7 @@ namespace TradeKing.Wpf.Helpers
                 ConsoleMessageLogger.Instance.Log(string.Format("[Quote Stream] Unhandled exception: {0} [{1}]", ex.Message, ex.GetType().ToString()));
                 Console.WriteLine();
                 quoteStream.CloseStream();
+                DoRetry(1000, tickers, callback);
             }
 
             var x = 1;

@@ -51,16 +51,22 @@ namespace TradeKing.API.Requests
                     var datas = str.Split(new string[] { "}}" }, StringSplitOptions.RemoveEmptyEntries);
                     foreach (var data in datas)
                     {
-                        var json = data + "}}";
-                        if (json.Contains("quote"))
-                        {
-                            item = JsonConvert.DeserializeObject<QuoteResponse>(json);
-                            streamItems.Add(((QuoteResponse)item).Response);
+                        try {
+                            var json = data + "}}";
+                            if (json.Contains("quote"))
+                            {
+                                item = JsonConvert.DeserializeObject<QuoteResponse>(json);
+                                streamItems.Add(((QuoteResponse)item).Response);
+                            }
+                            else if (json.Contains("trade"))
+                            {
+                                item = JsonConvert.DeserializeObject<TradeResponse>(json);
+                                streamItems.Add(((TradeResponse)item).Response);
+                            }
                         }
-                        else if (json.Contains("trade"))
+                        catch (JsonReaderException ex)
                         {
-                            item = JsonConvert.DeserializeObject<TradeResponse>(json);
-                            streamItems.Add(((TradeResponse)item).Response);
+                            var ex2 = ex;
                         }
                     }
 

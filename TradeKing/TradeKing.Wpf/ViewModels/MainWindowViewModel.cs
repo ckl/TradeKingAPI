@@ -39,7 +39,8 @@ namespace TradeKing.Wpf.ViewModels
                 List<string> tickers;
                 using (var db = DbFactory.GetDbSource())
                 {
-                    tickers = db.GetTickers();
+                    //tickers = db.GetTickers();
+                    tickers = WatchListsViewModel.SelectedItem.Tickers.ToList();
                 }
 
                 ConsoleMessageLogger.Instance.Log("Starting data stream...");
@@ -61,7 +62,7 @@ namespace TradeKing.Wpf.ViewModels
                     int askSz = Convert.ToInt32(quote.Asksz);
                     int bidSz = Convert.ToInt32(quote.Bidsz);
 
-                    var str = string.Format("{0} [Qu] {1} Ask:  {2} Bid: {3} AskSz: {4} BidSz: {5}\n", time, ticker.PadRight(5, ' '), quote.Ask.PadRight(6, ' '), quote.Bid.PadRight(5, ' '), askSz.ToString("N0").PadRight(9, ' '), bidSz.ToString("N0"));
+                    var str = string.Format("{0} [Qu] {1} Ask:  {2} Bid: {3} AskSz: {4} BidSz: {5}", time, ticker.PadRight(5, ' '), quote.Ask.PadRight(6, ' '), quote.Bid.PadRight(5, ' '), askSz.ToString("N0").PadRight(9, ' '), bidSz.ToString("N0"));
                     //Console.Write(str);
                     ConsoleMessageLogger.Instance.Log(str);
 
@@ -100,6 +101,11 @@ namespace TradeKing.Wpf.ViewModels
                     else if (item is Trade)
                         tab.OnNewStreamItem(item as Trade);
                 }));
+
+            if (TickerTabsViewModel.SelectedTab != tab)
+            {
+                tab.SetUnread();
+            }
         }
     }
 }

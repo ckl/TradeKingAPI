@@ -63,7 +63,7 @@
             <TabControl Margin="4" DataContext="{Binding TickerTabsViewModel}" ItemsSource="{Binding Tabs}"  SelectedItem="{Binding SelectedTab}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding TabTitle}">
+                        <TextBlock Text="{Binding TabTitle}" MouseLeftButtonDown="TabHeader_OnLeftClick">
                             <TextBlock.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Close" Click="CloseMenuItem_Click" />

@@ -76,6 +76,17 @@ namespace TradeKing.Wpf.ViewModels
 
         }
 
+        public void SetUnread()
+        {
+            if (! TabTitle.EndsWith("*"))
+                TabTitle = TabTitle + "*";
+        }
+
+        public void SetRead()
+        {
+            TabTitle = TabTitle.TrimEnd('*');
+        }
+
         private double _xAxisMin = Double.MaxValue;
         private double _xAxisMax = Double.MinValue;
 
@@ -91,7 +102,12 @@ namespace TradeKing.Wpf.ViewModels
         }
 
         public string Ticker { get; set; }
-        public string TabTitle { get; set; }
+        private string _tabTitle;
+        public string TabTitle
+        {
+            get { return _tabTitle; } 
+            set { SetField(ref _tabTitle, value, "TabTitle"); }
+        }
         public UserControl TabContent { get; set; }
         public string GraphTitle { get; set; }
         public ObservableCollection<Quote> Quotes { get; set; }
