@@ -4,9 +4,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TradeKing.Wpf.Views.UserControls"
+             xmlns:converters="clr-namespace:TradeKing.Wpf.Converters"
              xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+
+    <UserControl.Resources>
+        <converters:DollarConverter x:Key="DollarConverter"/>
+        <converters:TimeConverter x:Key="TimeConverter"/>
+        <converters:NumberConverter x:Key="NumberConverter"/>
+    </UserControl.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition />
@@ -28,7 +36,57 @@
         <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
 
         <Grid Grid.Row="2">
-            <DataGrid CanUserSortColumns="True" AutoGenerateColumns="True" ItemsSource="{Binding Quotes}" />
+            <DataGrid CanUserSortColumns="True" AutoGenerateColumns="False" ItemsSource="{Binding Quotes}">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Symbol" Width="100" IsReadOnly="True" SortMemberPath="Symbol" CanUserSort="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Symbol}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="Ask" Width="100" IsReadOnly="True" SortMemberPath="Ask" CanUserSort="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Ask, Converter={StaticResource DollarConverter}}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="Bid" Width="100" IsReadOnly="True" SortMemberPath="Bid" CanUserSort="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Bid, Converter={StaticResource DollarConverter}}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="Ask Size" Width="100" IsReadOnly="True" SortMemberPath="Asksz" CanUserSort="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Asksz, Converter={StaticResource NumberConverter}}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="Bid Size" Width="100" IsReadOnly="True" SortMemberPath="Bidsz" CanUserSort="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Bidsz, Converter={StaticResource NumberConverter}}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="Time" Width="150" IsReadOnly="True" SortMemberPath="Timestamp" CanUserSort="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Datetime, Converter={StaticResource TimeConverter}}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
         </Grid>
 
     </Grid>

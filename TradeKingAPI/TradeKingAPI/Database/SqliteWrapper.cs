@@ -177,7 +177,8 @@ namespace TradeKingAPI.Database
                             Bidsz = reader["BidSize"].ToString(),
                             Datetime = reader["DateTime"].ToString(),
                             Qcond = reader["QuoteCondition"].ToString(),
-                            Symbol = reader["Ticker"].ToString()
+                            Symbol = reader["Ticker"].ToString(),
+                            Timestamp = reader["TimeStamp"].ToString()
                         });
                     }
                 }
@@ -205,7 +206,8 @@ namespace TradeKingAPI.Database
                             Bidsz = reader["BidSize"].ToString(),
                             Datetime = reader["DateTime"].ToString(),
                             Qcond = reader["QuoteCondition"].ToString(),
-                            Symbol = reader["Ticker"].ToString()
+                            Symbol = reader["Ticker"].ToString(),
+                            Timestamp = reader["TimeStamp"].ToString()
                         });
                     }
                 }

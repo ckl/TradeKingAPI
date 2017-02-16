@@ -15,13 +15,35 @@ using TradeKing.Wpf.ViewModels;
 
 namespace TradeKing.Wpf
 {
-    public class MainWindowViewModel : INotifyPropertyChanged
+    public class MainWindowViewModel 
     {
         public TickerTabsViewModel TickerTabsViewModel { get; set; }
+        public ObservableCollection<string> WatchList { get; set; }
 
         public MainWindowViewModel()
         {
             TickerTabsViewModel = new TickerTabsViewModel();
+
+            var tickers = new List<string>() {
+                "SSPXF",
+                "CANWF",
+                "GDQFM",
+                "MSFT",
+                "GOOG",
+                "AAPL",
+                "KO",
+                "PEP",
+                "JNJ",
+                "PG",
+                "XOM",
+                "CVX",
+                "COP",
+                "PSX",
+                "INTL",
+                "AMZN"
+            };
+            tickers.Sort();
+            WatchList = new ObservableCollection<string>(tickers);
 
             StartStreamingData();
         }
@@ -78,35 +100,5 @@ namespace TradeKing.Wpf
                 });
             });
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-                handler(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        protected bool SetField<T>(ref T field, T value, string propertyName)
-        {
-            if (EqualityComparer<T>.Default.Equals(field, value))
-                return false;
-
-            field = value;
-            OnPropertyChanged(propertyName);
-
-            return true;
-        }
-    }
-
-    public class QuoteDataPoint
-    {
-        public decimal Ask { get; set; }
-        public decimal Asksz { get; set; }
-        public decimal Bid { get; set; }
-        public decimal Bidsz { get; set; }
-        public DateTime Time { get; set; }
-        public string Symbol { get; set; }
     }
 }

@@ -71,6 +71,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Base\NotifyPropertyChangedBase.cs" />
+    <Compile Include="Converters\DollarConverter.cs" />
+    <Compile Include="Converters\NumberConverter.cs" />
+    <Compile Include="Converters\TimeConverter.cs" />
+    <Compile Include="Models\QuoteGraphDataPoint.cs" />
     <Compile Include="ViewModels\TickerTabItemViewModel.cs" />
     <Compile Include="ViewModels\TickerTabsViewModel.cs" />
     <Compile Include="Views\UserControls\TickerTabContent.xaml.cs">

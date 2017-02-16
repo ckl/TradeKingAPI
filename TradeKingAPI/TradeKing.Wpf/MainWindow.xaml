@@ -31,40 +31,7 @@
         </Grid>
         
         <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2">
-            <TextBlock>
-                SSPXF
-                <LineBreak />
-                CANWF
-                <LineBreak />
-                GDQFM
-                <LineBreak />
-                MSFT
-                <LineBreak />
-                GOOG
-                <LineBreak />
-                AAPL
-                <LineBreak />
-                KO
-                <LineBreak />
-                PEP
-                <LineBreak />
-                JNJ 
-                <LineBreak />
-                PG 
-                <LineBreak />
-                XOM
-                <LineBreak />
-                CVX
-                <LineBreak />
-                COP
-                <LineBreak />
-                PSX
-                <LineBreak />
-                INTL
-                <LineBreak />
-                AMZN
-                <LineBreak />
-            </TextBlock>
+            <ListView ItemsSource="{Binding WatchList}" MouseDoubleClick="ListView_MouseDoubleClick" />
         </Grid>
 
         <Grid Grid.Row="4" Grid.Column="0" Height="25" VerticalAlignment="Bottom">
@@ -78,7 +45,7 @@
 
         <Grid Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" Grid.ColumnSpan="2">
 
-            <TabControl Margin="4" DataContext="{Binding TickerTabsViewModel}" ItemsSource="{Binding Tabs}">
+            <TabControl Margin="4" DataContext="{Binding TickerTabsViewModel}" ItemsSource="{Binding Tabs}"  SelectedItem="{Binding SelectedTab}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding TabTitle}" />

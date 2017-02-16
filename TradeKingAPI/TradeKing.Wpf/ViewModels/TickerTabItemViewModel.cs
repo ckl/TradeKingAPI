@@ -6,12 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using TradeKing.Wpf.Base;
+using TradeKing.Wpf.Models;
 using TradeKingAPI.Database;
 using TradeKingAPI.Models.Streaming;
 
 namespace TradeKing.Wpf.ViewModels
 {
-    public class TickerTabItemViewModel : INotifyPropertyChanged
+    public class TickerTabItemViewModel : NotifyPropertyChangedBase
     {
         public TickerTabItemViewModel(string tabTitle, string ticker, UserControl tabContent)
         {
@@ -20,7 +22,7 @@ namespace TradeKing.Wpf.ViewModels
             TabContent = tabContent;
             GraphTitle = ticker + " graph";
 
-            GraphQuotes = new ObservableCollection<QuoteDataPoint>();
+            GraphQuotes = new ObservableCollection<QuoteGraphDataPoint>();
 
             LoadQuotes();
         }
@@ -33,7 +35,7 @@ namespace TradeKing.Wpf.ViewModels
 
                 foreach (var quote in Quotes)
                 {
-                    GraphQuotes.Add(new QuoteDataPoint
+                    GraphQuotes.Add(new QuoteGraphDataPoint
                     {
                         Ask = Convert.ToDecimal(quote.Ask),
                         Bid = Convert.ToDecimal(quote.Bid),
@@ -59,7 +61,7 @@ namespace TradeKing.Wpf.ViewModels
         public void OnNewStreamItem(Quote quote)
         {
             Quotes.Add(quote);
-            GraphQuotes.Add(new QuoteDataPoint
+            GraphQuotes.Add(new QuoteGraphDataPoint
             {
                 Ask = Convert.ToDecimal(quote.Ask),
                 Bid = Convert.ToDecimal(quote.Bid),
@@ -91,37 +93,8 @@ namespace TradeKing.Wpf.ViewModels
         public UserControl TabContent { get; set; }
         public string GraphTitle { get; set; }
         public ObservableCollection<Quote> Quotes { get; set; }
-        public ObservableCollection<QuoteDataPoint> GraphQuotes { get; set; }
-
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-                handler(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        protected bool SetField<T>(ref T field, T value, string propertyName)
-        {
-            if (EqualityComparer<T>.Default.Equals(field, value))
-                return false;
-
-            field = value;
-            OnPropertyChanged(propertyName);
-
-            return true;
-        }
+        public ObservableCollection<QuoteGraphDataPoint> GraphQuotes { get; set; }
     }
 
-    public class QuoteDataPoint
-    {
-        public decimal Ask { get; set; }
-        public decimal Asksz { get; set; }
-        public decimal Bid { get; set; }
-        public decimal Bidsz { get; set; }
-        public DateTime Time { get; set; }
-        public string Symbol { get; set; }
-    }
+    
 }

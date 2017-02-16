@@ -20,16 +20,26 @@ namespace TradeKing.Wpf
     /// </summary>
     public partial class MainWindow : Window
     {
+        private MainWindowViewModel _viewModel;
+
         public MainWindow()
         {
             InitializeComponent();
-            var vm = new MainWindowViewModel();
-            DataContext = vm;
+            _viewModel = new MainWindowViewModel();
+            DataContext = _viewModel;
         }
 
-        private void _sspxfScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        private void ListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            //_sspxfScrollViewer.ScrollToEnd();
+            var listView = sender as ListView;
+            if (listView == null)
+                return;
+
+            var ticker = listView.SelectedItem as string;
+            if (ticker == null)
+                return;
+
+            _viewModel.TickerTabsViewModel.AddTab(ticker);
         }
     }
 }
