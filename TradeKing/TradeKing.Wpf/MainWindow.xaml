@@ -6,19 +6,21 @@
         xmlns:local="clr-namespace:TradeKing.Wpf"
         xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="576" Width="1024"> <!-- 16x9 -->
+        Title="TK" Height="576" Width="1024"> <!-- 16x9 -->
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" /> <!-- File Menu -->
-            <RowDefinition />               <!-- Tabs and content -->
+            <RowDefinition Height="*" />               <!-- Tabs and content -->
             <RowDefinition Height="25" />   <!-- Add ticker txtbox at bottom of left column -->
+            <RowDefinition Height="5" />    <!-- grid splitter for the console -->
+            <RowDefinition Height="125" />   <!-- output console -->
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="125" MinWidth="125" />   <!-- Left pane -->
             <ColumnDefinition Width="5"/>                     <!-- Grid Splitter -->
-            <ColumnDefinition />                              <!-- Tabs and content -->
+            <ColumnDefinition Width="*" />                              <!-- Tabs and content -->
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Row="0" Grid.ColumnSpan="3">
@@ -30,28 +32,31 @@
                 <MenuItem Header="_Help" />
             </Menu>
         </Grid>
-        
+
         <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2">
             <Grid.RowDefinitions>
+                <!--<RowDefinition Height="25" />-->
+                <RowDefinition Height="*" />
                 <RowDefinition Height="25" />
-                <RowDefinition />
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0">
+                <DockPanel DataContext="{Binding WatchListsViewModel}">
+                    <ComboBox x:Name="ComboWatchLists" DockPanel.Dock="Top" ItemsSource="{Binding WatchLists}" SelectedItem="{Binding SelectedItem}" DisplayMemberPath="Name" />
+                    <ListView Grid.Row="1" ItemsSource="{Binding SelectedItem.Tickers, ElementName=ComboWatchLists}" MouseDoubleClick="ListView_MouseDoubleClick" DockPanel.Dock="Top" ScrollViewer.VerticalScrollBarVisibility="Visible" />
+                </DockPanel>
                 
             </Grid>
 
-            <ListView Grid.Row="1" ItemsSource="{Binding WatchList}" MouseDoubleClick="ListView_MouseDoubleClick" />
+            <Grid Grid.Row="2" Height="25" VerticalAlignment="Bottom">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                    <TextBox Width="Auto" MinWidth="50" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" />
+                    <Button Width="Auto" MaxWidth="100">Add Ticker</Button>
+                </StackPanel>
+            </Grid>
         </Grid>
 
-        <Grid Grid.Row="4" Grid.Column="0" Height="25" VerticalAlignment="Bottom">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                <TextBox Width="Auto" MinWidth="50" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" />
-                <Button Width="Auto" MaxWidth="100">Add Ticker</Button>
-            </StackPanel>
-        </Grid>
-
-        <GridSplitter Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" Width="5" HorizontalAlignment="Stretch" />
+        <GridSplitter Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Width="5" HorizontalAlignment="Stretch" />
 
         <Grid Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" Grid.ColumnSpan="2">
 
@@ -73,6 +78,14 @@
                     </DataTemplate>
                 </TabControl.ContentTemplate>
             </TabControl>
+        </Grid>
+
+        <GridSplitter Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Height="5" HorizontalAlignment="Stretch" />
+
+        <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">
+            <ScrollViewer>
+                <TextBlock DataContext="{Binding ConsoleMessageViewModel}" Text="{Binding ConsoleMessages}" />
+            </ScrollViewer>
         </Grid>
     </Grid>
 </Window>

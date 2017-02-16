@@ -13,7 +13,7 @@ namespace TradeKing.Wpf.Converters
         {
             var input = double.Parse(value as string);
 
-            return $"${input:0.00}";
+            return $"${input:0.000}";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

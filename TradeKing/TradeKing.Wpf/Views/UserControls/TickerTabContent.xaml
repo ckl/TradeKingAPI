@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:TradeKing.Wpf.Views.UserControls"
              xmlns:converters="clr-namespace:TradeKing.Wpf.Converters"
              xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
+             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
@@ -13,6 +14,13 @@
         <converters:DollarConverter x:Key="DollarConverter"/>
         <converters:TimeConverter x:Key="TimeConverter"/>
         <converters:NumberConverter x:Key="NumberConverter"/>
+        <converters:EmptyListVisibilityConverter x:Key="EmptyListVisibilityConverter" />
+
+        <CollectionViewSource Source="{Binding Quotes}" x:Key="GridItems">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Timestamp" Direction="Descending"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
     </UserControl.Resources>
     
     <Grid>
@@ -22,7 +30,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <oxy:Plot Grid.Row="0" Title="{Binding GraphTitle}">
+        <oxy:Plot Grid.Row="0" Title="{Binding GraphTitle}" Visibility="{Binding GraphQuotes, Converter={StaticResource EmptyListVisibilityConverter}}">
             <oxy:Plot.Axes>
                 <oxy:DateTimeAxis Position="Bottom" StringFormat="HH:mm" />
                 <oxy:LinearAxis Position="Left" Minimum="{Binding xAxisMin}" Maximum="{Binding xAxisMax}" />
@@ -36,55 +44,14 @@
         <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
 
         <Grid Grid.Row="2">
-            <DataGrid CanUserSortColumns="True" AutoGenerateColumns="False" ItemsSource="{Binding Quotes}">
+            <DataGrid CanUserSortColumns="True" AutoGenerateColumns="False" ItemsSource="{Binding Source={StaticResource GridItems}}">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="Symbol" Width="100" IsReadOnly="True" SortMemberPath="Symbol" CanUserSort="True">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Symbol}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-
-                    <DataGridTemplateColumn Header="Ask" Width="100" IsReadOnly="True" SortMemberPath="Ask" CanUserSort="True">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Ask, Converter={StaticResource DollarConverter}}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-
-                    <DataGridTemplateColumn Header="Bid" Width="100" IsReadOnly="True" SortMemberPath="Bid" CanUserSort="True">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Bid, Converter={StaticResource DollarConverter}}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-
-                    <DataGridTemplateColumn Header="Ask Size" Width="100" IsReadOnly="True" SortMemberPath="Asksz" CanUserSort="True">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Asksz, Converter={StaticResource NumberConverter}}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-
-                    <DataGridTemplateColumn Header="Bid Size" Width="100" IsReadOnly="True" SortMemberPath="Bidsz" CanUserSort="True">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Bidsz, Converter={StaticResource NumberConverter}}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-
-                    <DataGridTemplateColumn Header="Time" Width="150" IsReadOnly="True" SortMemberPath="Timestamp" CanUserSort="True">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Datetime, Converter={StaticResource TimeConverter}}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Symbol" Binding="{Binding Symbol}" SortMemberPath="Symbol" CanUserSort="True" IsReadOnly="True" Width="100" />
+                    <DataGridTextColumn Header="Ask" Binding="{Binding Ask, Converter={StaticResource DollarConverter}}" SortMemberPath="Ask" CanUserSort="True" IsReadOnly="True" Width="100" />
+                    <DataGridTextColumn Header="Bid" Binding="{Binding Bid, Converter={StaticResource DollarConverter}}" SortMemberPath="Bid" CanUserSort="True" IsReadOnly="True" Width="100" />
+                    <DataGridTextColumn Header="Ask Size" Binding="{Binding Asksz, Converter={StaticResource NumberConverter}}" SortMemberPath="Asksz" CanUserSort="True" IsReadOnly="True" Width="100" />
+                    <DataGridTextColumn Header="Bid Size" Binding="{Binding Bidsz, Converter={StaticResource NumberConverter}}" SortMemberPath="Bidsz" CanUserSort="True" IsReadOnly="True" Width="100" />
+                    <DataGridTextColumn Header="DateTime" Binding="{Binding Datetime, Converter={StaticResource TimeConverter}}" SortMemberPath="Timestamp" CanUserSort="True" IsReadOnly="True" Width="150" />
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>

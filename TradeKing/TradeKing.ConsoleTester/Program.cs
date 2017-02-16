@@ -191,7 +191,7 @@ namespace TradeKing_ConsoleTester
                 tokenSource.Dispose();
             }
 
-            quoteStream.Close();
+            quoteStream.CloseStream();
             quoteStream = null;
         }
 

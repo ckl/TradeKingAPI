@@ -10,6 +10,8 @@ using TradeKing.Wpf.Base;
 using TradeKing.Wpf.Models;
 using TradeKing.API.Database;
 using TradeKing.API.Models.Streaming;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace TradeKing.Wpf.ViewModels
 {

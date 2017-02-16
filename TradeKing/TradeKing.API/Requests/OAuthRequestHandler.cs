@@ -1,36 +1,25 @@
 ﻿using Newtonsoft.Json;
 using OAuth;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using TradeKing.API.Base.Responses;
 using TradeKing.API.Database;
-using TradeKing.API.Interfaces;
-using TradeKing.API.Models.Auth;
-using TradeKing.API.Models.Responses;
 using TradeKingAPI.Helpers;
 
 namespace TradeKing.API.Requests
 {
     public class OAuthRequestHandler
     {
-        //private OAuthKeys _oauthKeys;
-
         public OAuthRequestHandler()
         {
             using (var db = DbFactory.GetDbSource())
             {
-                //_oauthKeys = db.GetOAuthKeys();
                 if (OAuthKeyManager.Instance.OAuthKeys == null)
                 {
                     Console.WriteLine("Reading OAuth keys from SQLite...");
                     OAuthKeyManager.Instance.OAuthKeys = db.GetOAuthKeys();
-
                 }
 
                 if (OAuthKeyManager.Instance.OAuthKeys == null)

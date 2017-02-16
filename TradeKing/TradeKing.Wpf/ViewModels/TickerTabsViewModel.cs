@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TradeKing.Wpf.Base;
 using TradeKing.Wpf.Views.UserControls;
-using TradeKing.API.Models.Streaming;
 
 namespace TradeKing.Wpf.ViewModels
 {
@@ -27,15 +21,37 @@ namespace TradeKing.Wpf.ViewModels
 
         public void AddTab(string ticker)
         {
-            var tabView = new TickerTabContent();
-            var viewModel = new TickerTabItemViewModel(ticker, ticker, tabView);
-            tabView.SetViewModel(viewModel);
-            Tabs.Add(viewModel);
-            SelectedTab = viewModel;
+            var tab = Tabs.FirstOrDefault(t => t.Ticker == ticker);
+
+            if (tab != null)
+            {
+                SelectedTab = tab;
+            }
+            else
+            {
+                var tabView = new TickerTabContent();
+                var viewModel = new TickerTabItemViewModel(ticker, ticker, tabView);
+                tabView.SetViewModel(viewModel);
+                Tabs.Add(viewModel);
+                SelectedTab = viewModel;
+            }
         }
 
         public void RemoveTab(TickerTabItemViewModel viewModel)
         {
+            if (SelectedTab == viewModel && Tabs.Count == 1)
+            {
+                SelectedTab = null;
+            }
+            else
+            {
+                // TODO: activate next tab
+                //var tabIndexToClose = Tabs.IndexOf(viewModel);
+                //int nextTab;
+                //if (tabIndexToClose == Tabs.Count)
+                //    nextTab = 
+                    
+            }
             Tabs.Remove(viewModel);
         }
 
