@@ -128,9 +128,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TradeKingAPI\TradeKingAPI.csproj">
+    <ProjectReference Include="..\TradeKingAPI\TradeKing.API.csproj">
       <Project>{591c33bd-0337-4d85-8cf3-2528ee2617e6}</Project>
-      <Name>TradeKingAPI</Name>
+      <Name>TradeKing.API</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
