@@ -7,6 +7,7 @@
         xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
         mc:Ignorable="d"
         Title="MainWindow" Height="576" Width="1024"> <!-- 16x9 -->
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" /> <!-- File Menu -->
@@ -48,7 +49,13 @@
             <TabControl Margin="4" DataContext="{Binding TickerTabsViewModel}" ItemsSource="{Binding Tabs}"  SelectedItem="{Binding SelectedTab}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding TabTitle}" />
+                        <TextBlock Text="{Binding TabTitle}">
+                            <TextBlock.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Close" Click="CloseMenuItem_Click" />
+                                </ContextMenu>
+                            </TextBlock.ContextMenu>
+                        </TextBlock>
                     </DataTemplate>
                 </TabControl.ItemTemplate>
                 <TabControl.ContentTemplate>

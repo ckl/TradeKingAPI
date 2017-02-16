@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TradeKing.Wpf.ViewModels;
 
 namespace TradeKing.Wpf
 {
@@ -40,6 +41,15 @@ namespace TradeKing.Wpf
                 return;
 
             _viewModel.TickerTabsViewModel.AddTab(ticker);
+        }
+
+        private void CloseMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var vm = (sender as MenuItem).DataContext as TickerTabItemViewModel;
+            if (vm == null)
+                return;
+
+            _viewModel.TickerTabsViewModel.RemoveTab(vm);
         }
     }
 }

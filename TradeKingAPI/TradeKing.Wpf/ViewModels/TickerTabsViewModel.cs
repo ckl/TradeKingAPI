@@ -34,6 +34,11 @@ namespace TradeKing.Wpf.ViewModels
             SelectedTab = viewModel;
         }
 
+        public void RemoveTab(TickerTabItemViewModel viewModel)
+        {
+            Tabs.Remove(viewModel);
+        }
+
         private TickerTabItemViewModel _selectedTab;
     }
 }
