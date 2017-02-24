@@ -42,7 +42,7 @@
 
             <Grid Grid.Row="0">
                 <DockPanel DataContext="{Binding WatchListsViewModel}">
-                    <ComboBox x:Name="ComboWatchLists" DockPanel.Dock="Top" ItemsSource="{Binding WatchLists}" SelectedItem="{Binding SelectedItem}" DisplayMemberPath="Name" />
+                    <ComboBox x:Name="ComboWatchLists" DockPanel.Dock="Top" ItemsSource="{Binding WatchLists}" SelectedItem="{Binding SelectedItem}" SelectionChanged="ComboWatchLists_SelectionChanged" DisplayMemberPath="Name" />
                     <ListView Grid.Row="1" ItemsSource="{Binding SelectedItem.Tickers, ElementName=ComboWatchLists}" MouseDoubleClick="ListView_MouseDoubleClick" DockPanel.Dock="Top" ScrollViewer.VerticalScrollBarVisibility="Visible" />
                 </DockPanel>
                 
@@ -83,9 +83,25 @@
         <GridSplitter Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Height="5" HorizontalAlignment="Stretch" />
 
         <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">
-            <ScrollViewer>
-                <TextBlock DataContext="{Binding ConsoleMessageViewModel}" Text="{Binding ConsoleMessages}" />
-            </ScrollViewer>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+                <ScrollViewer>
+                    <TextBlock DataContext="{Binding ConsoleMessageViewModel}" Text="{Binding ConsoleMessages}" />
+                </ScrollViewer>
+            </Grid>
+
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+
+            <Grid Grid.Column="2">
+                <ScrollViewer>
+                    <TextBlock DataContext="{Binding ConsoleMessageViewModel}" Text="{Binding QuoteStreamMessages}" />
+                </ScrollViewer>
+            </Grid>
         </Grid>
     </Grid>
 </Window>

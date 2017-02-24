@@ -92,12 +92,12 @@ namespace TradeKing.Wpf.ViewModels
 
         public double xAxisMin
         {
-            get { return _xAxisMin - (_xAxisMin * 0.10); }
+            get { return _xAxisMin - (_xAxisMin * 0.025); }
             set { SetField(ref _xAxisMin, value, "xAxisMin"); }
         }
         public double xAxisMax
         {
-            get { return _xAxisMax + (_xAxisMax * 0.10); }
+            get { return _xAxisMax + (_xAxisMax * 0.025); }
             set { SetField(ref _xAxisMax, value, "xAxisMax"); }
         }
 

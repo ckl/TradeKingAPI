@@ -49,5 +49,23 @@ namespace TradeKing.Wpf
 
             _viewModel.TickerTabsViewModel.SelectedTab.SetRead();
         }
+
+        private Models.WatchList _previous;
+        private void ComboWatchLists_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var comboBox = sender as ComboBox;
+            if (comboBox == null)
+                return;
+
+            var current = comboBox.SelectedItem as Models.WatchList;
+            if (current == null)
+                return;
+
+            if (current != _previous)
+            {
+                _viewModel.CancelStream();
+                _viewModel.StartStreamingData();
+            }
+        }
     }
 }

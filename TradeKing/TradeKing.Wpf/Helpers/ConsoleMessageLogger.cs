@@ -12,7 +12,16 @@ namespace TradeKing.Wpf.Helpers
             //_consoleMessageString.AppendLine(msg);
             _consoleMessageString.Insert(0, msg + Environment.NewLine);
             Console.WriteLine(msg);
-            _viewModel.NotifyPropertyChanged();
+            _viewModel.NotifyPropertyChanged("ConsoleMessages");
+        }
+
+        public void LogQuoteStreamMessage(string str)
+        {
+            var msg = DateTime.Now + ": " + str;
+            //_consoleMessageString.AppendLine(msg);
+            _quoteStreamMessageString.Insert(0, msg + Environment.NewLine);
+            Console.WriteLine(msg);
+            _viewModel.NotifyPropertyChanged("QuoteStreamMessages");
         }
 
         private static object myLock = new object();
@@ -23,6 +32,13 @@ namespace TradeKing.Wpf.Helpers
         public string ConsoleMessageString
         {
             get { return _consoleMessageString.ToString(); }
+            private set { }
+        }
+
+        private StringBuilder _quoteStreamMessageString = new StringBuilder();
+        public string QuoteStreamMessageString
+        {
+            get { return _quoteStreamMessageString.ToString(); }
             private set { }
         }
 

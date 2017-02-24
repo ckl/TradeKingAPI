@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -30,22 +31,72 @@ namespace TradeKing.Wpf.ViewModels
         {
             await WatchListsViewModel.LoadWatchLists();
 
-            StartStreamingData();
+            //StartStreamingData();
         }
 
-        private void StartStreamingData()
+        private CancellationTokenSource _tokenSource = null;
+        public  void StartStreamingData()
         {
-            Task.Run(() => {
-                List<string> tickers;
-                using (var db = DbFactory.GetDbSource())
-                {
-                    //tickers = db.GetTickers();
-                    tickers = WatchListsViewModel.SelectedItem.Tickers.ToList();
-                }
+            //Task.Run(() => {
+            //    List<string> tickers;
+            //    using (var db = DbFactory.GetDbSource())
+            //    {
+            //        //tickers = db.GetTickers();
+            //        tickers = WatchListsViewModel.SelectedItem.Tickers.ToList();
+            //    }
 
-                ConsoleMessageLogger.Instance.Log("Starting data stream...");
+            //    ConsoleMessageLogger.Instance.Log("Starting data stream...");
+            //    TkApiRequestWrapper.ExecuteStreamRequest(tickers, HandleStreamData);
+            //});
+
+            _tokenSource = new CancellationTokenSource();
+            var ct = _tokenSource.Token;
+
+            List<string> tickers;
+            using (var db = DbFactory.GetDbSource())
+            {
+                tickers = WatchListsViewModel.SelectedItem.Tickers.ToList();
+            }
+
+            var task = Task.Factory.StartNew(() =>
+            {
+                // Were we already canceled?
+                ct.ThrowIfCancellationRequested();
+
+                ConsoleMessageLogger.Instance.Log("Starting data stream with " + tickers.Count + " tickers...");
                 TkApiRequestWrapper.ExecuteStreamRequest(tickers, HandleStreamData);
-            });
+
+            }, _tokenSource.Token);
+
+            //try
+            //{
+            //    ConsoleMessageLogger.Instance.Log("Starting data stream...");
+            //    task.Wait();
+
+            //    //ConsoleMessageLogger.Instance.Log("Starting data stream...");
+            //}
+            //catch (Exception ex)
+            //{
+            //    ConsoleMessageLogger.Instance.Log("Exception in Stream Data: " + ex.Message);
+            //}
+            //finally
+            //{
+            //    Console.WriteLine("xyz 123");
+            //}
+
+            task.Wait();
+            Console.WriteLine("Test 123");
+        }
+
+        public void CancelStream()
+        {
+            if (_tokenSource != null)
+            {
+                TkApiRequestWrapper.CancelStreamRequest();
+                _tokenSource.Cancel();
+                _tokenSource.Dispose();
+                ConsoleMessageLogger.Instance.Log("Stopping data stream...");
+            }
         }
 
         private void HandleStreamData(List<StreamDataItem> items)
@@ -64,7 +115,7 @@ namespace TradeKing.Wpf.ViewModels
 
                     var str = string.Format("{0} [Qu] {1} Ask:  {2} Bid: {3} AskSz: {4} BidSz: {5}", time, ticker.PadRight(5, ' '), quote.Ask.PadRight(6, ' '), quote.Bid.PadRight(5, ' '), askSz.ToString("N0").PadRight(9, ' '), bidSz.ToString("N0"));
                     //Console.Write(str);
-                    ConsoleMessageLogger.Instance.Log(str);
+                    ConsoleMessageLogger.Instance.LogQuoteStreamMessage(str);
 
                     using (var db = DbFactory.GetDbSource())
                     {
@@ -76,7 +127,7 @@ namespace TradeKing.Wpf.ViewModels
                     Trade trade = (Trade)item;
                     var str = string.Format("{0} [Tr] {1} Last: {2} Vol: {3}", time, ticker.PadRight(6, ' '), trade.Last.PadRight(5, ' '), trade.Vl);
                     //Console.WriteLine("{0} [Tr] {1} Last: {2} Vol: {3}", time, ticker.PadRight(6, ' '), trade.Last.PadRight(5, ' '), trade.Vl);
-                    ConsoleMessageLogger.Instance.Log(str);
+                    ConsoleMessageLogger.Instance.LogQuoteStreamMessage(str);
 
                     using (var db = DbFactory.GetDbSource())
                     {

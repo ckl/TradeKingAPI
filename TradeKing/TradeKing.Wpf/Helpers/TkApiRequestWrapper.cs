@@ -17,41 +17,50 @@ namespace TradeKing.Wpf.Helpers
 {
     public class TkApiRequestWrapper
     {
+        private static QuoteStreamRequest _quoteStreamRequest;
+        //private static CancellationToken _cancelToken;
+        //private static CancellationTokenSource _cancelTokenSource;
+
         public static async void ExecuteStreamRequest(List<string> tickers, Action<List<StreamDataItem>> callback)
         {
-            var quoteStream = new QuoteStreamRequest(tickers);
+            _quoteStreamRequest = new QuoteStreamRequest(tickers);
 
             try
             {
-                await quoteStream.Execute(callback);
+                await _quoteStreamRequest.Execute(callback);
             }
             catch (WebException ex)
             {
                 ConsoleMessageLogger.Instance.Log("[Quote Stream] Web exception: " + ex.Message);
-                quoteStream.CloseStream();
+                _quoteStreamRequest.CloseStream();
                 DoRetry(5000, tickers, callback);
             }
             catch (IOException ex)
             {
                 // TK API closed the connection, cleanup and retry in 1 second
-                quoteStream.CloseStream();
+                _quoteStreamRequest.CloseStream();
                 DoRetry(1000, tickers, callback);
             }
             catch (NullReferenceException ex)
             {
                 ConsoleMessageLogger.Instance.Log("[Quote Stream] NullReferenceException. StackTrace: " + ex.StackTrace);
-                quoteStream.CloseStream();
+                _quoteStreamRequest.CloseStream();
                 DoRetry(1000, tickers, callback);
             }
             catch (Exception ex)
             {
                 ConsoleMessageLogger.Instance.Log(string.Format("[Quote Stream] Unhandled exception: {0} [{1}]", ex.Message, ex.GetType().ToString()));
                 Console.WriteLine();
-                quoteStream.CloseStream();
+                _quoteStreamRequest.CloseStream();
                 DoRetry(1000, tickers, callback);
             }
 
-            var x = 1;
+        }
+
+        public static void CancelStreamRequest()
+        {
+            if (_quoteStreamRequest != null)
+                _quoteStreamRequest.CloseStream();
         }
 
         private static void DoRetry(int delay, List<string> tickers, Action<List<StreamDataItem>> callback)

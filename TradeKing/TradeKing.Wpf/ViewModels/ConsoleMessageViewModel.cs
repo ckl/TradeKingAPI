@@ -15,15 +15,20 @@ namespace TradeKing.Wpf.ViewModels
             ConsoleMessageLogger.Instance.SetViewModel(this);
         }
 
-        public void NotifyPropertyChanged()
+        public void NotifyPropertyChanged(string property)
         {
-            OnPropertyChanged("ConsoleMessages");
+            OnPropertyChanged(property);
         }
 
-        private StringBuilder _consoleMessages = new StringBuilder();
         public string ConsoleMessages
         {
             get { return ConsoleMessageLogger.Instance.ConsoleMessageString; }
+            private set { }
+        }
+
+        public string QuoteStreamMessages
+        {
+            get { return ConsoleMessageLogger.Instance.QuoteStreamMessageString; }
             private set { }
         }
     }
