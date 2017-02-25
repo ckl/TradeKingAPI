@@ -15,7 +15,6 @@ namespace TradeKing.API.Requests
     {
         private int _bufferSize = 1024;
         private OAuthRequestHandler _requestHandler;
-        private bool _retry = true;
         private bool _keepProcessing = true;
         private bool _isClosed = false;
 
@@ -35,9 +34,8 @@ namespace TradeKing.API.Requests
         {
             var url = "market/quotes.xml?symbols=" + string.Join(",", _tickers);
 
-            JObject obj = null;
-            try
-            {
+            //try
+            //{
                 _response = await _requestHandler.ExecuteStreamRequest<HttpWebResponse>(url);
 
                 var responseStream = _response.GetResponseStream();
@@ -71,24 +69,24 @@ namespace TradeKing.API.Requests
                 Console.WriteLine("Releasing stream resources...");
                 CloseStream();
 
-            }
-            catch (IOException)
-            {
-                // carry on
-                Console.WriteLine("Caught IOException");
-                await Execute(callback);
-            }
-            catch (ObjectDisposedException ex)
-            {
-                Console.WriteLine("Caught ObjectDisposedException");
-                await Execute(callback);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Caught Exception: {0} [{1}", ex.Message, ex.StackTrace);
-                Console.WriteLine(obj);
-                await Execute(callback);
-            }
+            //}
+            //catch (IOException)
+            //{
+            //    // carry on
+            //    Console.WriteLine("Caught IOException");
+            //    await Execute(callback);
+            //}
+            //catch (ObjectDisposedException ex)
+            //{
+            //    Console.WriteLine("Caught ObjectDisposedException: " + ex.Message);
+            //    await Execute(callback);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine("Caught Exception: {0} [{1}", ex.Message, ex.StackTrace);
+            //    Console.WriteLine(obj);
+            //    await Execute(callback);
+            //}
         }
 
         private List<StreamDataItem> ProcessStringBuilder()
@@ -179,7 +177,6 @@ namespace TradeKing.API.Requests
             if (_isClosed)
                 return;
 
-            _retry = false;
             _keepProcessing = false;
             _isClosed = true;
 

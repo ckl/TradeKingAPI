@@ -5,22 +5,36 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TradeKing.Wpf"
         xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:converters="clr-namespace:TradeKing.Wpf.Converters"
         mc:Ignorable="d"
         Title="TK" Height="576" Width="1024"> <!-- 16x9 -->
 
+    <Window.Resources>
+        <converters:DollarConverter x:Key="DollarConverter"/>
+        <converters:TimeConverter x:Key="TimeConverter"/>
+        <converters:NumberConverter x:Key="NumberConverter"/>
+        
+        <CollectionViewSource Source="{Binding StreamQuotes}" x:Key="GridItems">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Timestamp" Direction="Descending"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+    </Window.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" /> <!-- File Menu -->
-            <RowDefinition Height="*" />               <!-- Tabs and content -->
+            <RowDefinition Height="*" />    <!-- Tabs and content -->
             <RowDefinition Height="25" />   <!-- Add ticker txtbox at bottom of left column -->
             <RowDefinition Height="5" />    <!-- grid splitter for the console -->
-            <RowDefinition Height="125" />   <!-- output console -->
+            <RowDefinition Height="*" />    <!-- output console -->
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="125" MinWidth="125" />   <!-- Left pane -->
             <ColumnDefinition Width="5"/>                     <!-- Grid Splitter -->
-            <ColumnDefinition Width="*" />                              <!-- Tabs and content -->
+            <ColumnDefinition Width="*" />                    <!-- Tabs and content -->
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Row="0" Grid.ColumnSpan="3">
@@ -99,7 +113,17 @@
 
             <Grid Grid.Column="2">
                 <ScrollViewer>
-                    <TextBlock DataContext="{Binding ConsoleMessageViewModel}" Text="{Binding QuoteStreamMessages}" />
+                    <!--<TextBlock DataContext="{Binding ConsoleMessageViewModel}" Text="{Binding QuoteStreamMessages}" />-->
+                    <DataGrid CanUserSortColumns="True" AutoGenerateColumns="False" ItemsSource="{Binding Source={StaticResource GridItems}}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Symbol" Binding="{Binding Symbol}" SortMemberPath="Symbol" CanUserSort="True" IsReadOnly="True" Width="100" />
+                            <DataGridTextColumn Header="Ask" Binding="{Binding Ask, Converter={StaticResource DollarConverter}}" SortMemberPath="Ask" CanUserSort="True" IsReadOnly="True" Width="100" />
+                            <DataGridTextColumn Header="Bid" Binding="{Binding Bid, Converter={StaticResource DollarConverter}}" SortMemberPath="Bid" CanUserSort="True" IsReadOnly="True" Width="100" />
+                            <DataGridTextColumn Header="Ask Size" Binding="{Binding Asksz, Converter={StaticResource NumberConverter}}" SortMemberPath="Asksz" CanUserSort="True" IsReadOnly="True" Width="100" />
+                            <DataGridTextColumn Header="Bid Size" Binding="{Binding Bidsz, Converter={StaticResource NumberConverter}}" SortMemberPath="Bidsz" CanUserSort="True" IsReadOnly="True" Width="100" />
+                            <DataGridTextColumn Header="DateTime" Binding="{Binding Datetime, Converter={StaticResource TimeConverter}}" SortMemberPath="Timestamp" CanUserSort="True" IsReadOnly="True" Width="150" />
+                        </DataGrid.Columns>
+                    </DataGrid>
                 </ScrollViewer>
             </Grid>
         </Grid>

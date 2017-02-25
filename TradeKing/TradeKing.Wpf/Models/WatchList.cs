@@ -11,7 +11,6 @@ namespace TradeKing.Wpf.Models
     public class WatchList : NotifyPropertyChangedBase
     {
         private string _name;
-        private ObservableCollection<string> _tickers;
 
         public string Name
         {

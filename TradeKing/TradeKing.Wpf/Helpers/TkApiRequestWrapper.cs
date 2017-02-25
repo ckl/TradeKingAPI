@@ -31,25 +31,26 @@ namespace TradeKing.Wpf.Helpers
             }
             catch (WebException ex)
             {
-                ConsoleMessageLogger.Instance.Log("[Quote Stream] Web exception: " + ex.Message);
+                Console.WriteLine("[Quote Stream] Web exception: " + ex.Message);
                 _quoteStreamRequest.CloseStream();
                 DoRetry(5000, tickers, callback);
             }
             catch (IOException ex)
             {
                 // TK API closed the connection, cleanup and retry in 1 second
+                Console.WriteLine("[Quote Stream] IO exception: " + ex.Message);
                 _quoteStreamRequest.CloseStream();
                 DoRetry(1000, tickers, callback);
             }
             catch (NullReferenceException ex)
             {
-                ConsoleMessageLogger.Instance.Log("[Quote Stream] NullReferenceException. StackTrace: " + ex.StackTrace);
+                Console.WriteLine("[Quote Stream] NullReferenceException. StackTrace: " + ex.StackTrace);
                 _quoteStreamRequest.CloseStream();
                 DoRetry(1000, tickers, callback);
             }
             catch (Exception ex)
             {
-                ConsoleMessageLogger.Instance.Log(string.Format("[Quote Stream] Unhandled exception: {0} [{1}]", ex.Message, ex.GetType().ToString()));
+                Console.WriteLine(string.Format("[Quote Stream] Unhandled exception: {0} [{1}]", ex.Message, ex.GetType().ToString()));
                 Console.WriteLine();
                 _quoteStreamRequest.CloseStream();
                 DoRetry(1000, tickers, callback);

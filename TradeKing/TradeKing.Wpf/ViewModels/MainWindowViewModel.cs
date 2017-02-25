@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,12 +18,14 @@ namespace TradeKing.Wpf.ViewModels
         public TickerTabsViewModel TickerTabsViewModel { get; set; }
         public WatchListsViewModel WatchListsViewModel { get; set; }
         public ConsoleMessageViewModel ConsoleMessageViewModel { get; set; }
+        public ObservableCollection<Quote> StreamQuotes { get; set; }
 
         public MainWindowViewModel()
         {
             TickerTabsViewModel = new TickerTabsViewModel();
             ConsoleMessageViewModel = new ConsoleMessageViewModel();
             WatchListsViewModel = new WatchListsViewModel();
+            StreamQuotes = new ObservableCollection<Quote>();
 
             LoadTradeKingStuff();
         }
@@ -121,6 +124,8 @@ namespace TradeKing.Wpf.ViewModels
                     {
                         db.SaveStreamQuote(quote);
                     }
+
+                    StreamQuotes.Add(quote);
                 }
                 else if (item is Trade)
                 {

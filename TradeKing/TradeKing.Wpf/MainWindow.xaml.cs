@@ -50,7 +50,6 @@ namespace TradeKing.Wpf
             _viewModel.TickerTabsViewModel.SelectedTab.SetRead();
         }
 
-        private Models.WatchList _previous;
         private void ComboWatchLists_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var comboBox = sender as ComboBox;
@@ -61,11 +60,8 @@ namespace TradeKing.Wpf
             if (current == null)
                 return;
 
-            if (current != _previous)
-            {
-                _viewModel.CancelStream();
-                _viewModel.StartStreamingData();
-            }
+            _viewModel.CancelStream();
+            _viewModel.StartStreamingData();
         }
     }
 }
