@@ -81,6 +81,7 @@
     <Compile Include="Converters\TimeConverter.cs" />
     <Compile Include="Helpers\ConsoleMessageLogger.cs" />
     <Compile Include="Helpers\TkApiRequestWrapper.cs" />
+    <Compile Include="Models\QuoteAndTrade.cs" />
     <Compile Include="Models\QuoteGraphDataPoint.cs" />
     <Compile Include="Models\WatchList.cs" />
     <Compile Include="ViewModels\ConsoleMessageViewModel.cs" />

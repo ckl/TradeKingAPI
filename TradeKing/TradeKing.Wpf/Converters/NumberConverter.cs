@@ -11,9 +11,14 @@ namespace TradeKing.Wpf.Converters
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            var input = int.Parse(value as string);
-            var input2 = input.ToString("N2");
-            return input2.Substring(0, input2.Length - 3);
+            if (value != null)
+            {
+                var input = int.Parse(value as string);
+                var input2 = input.ToString("N2");
+                return input2.Substring(0, input2.Length - 3);
+            }
+
+            return string.Empty;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

@@ -8,7 +8,7 @@
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         xmlns:converters="clr-namespace:TradeKing.Wpf.Converters"
         mc:Ignorable="d"
-        Title="TK" Height="576" Width="1024"> <!-- 16x9 -->
+        Title="TK" Height="720" Width="1280"> <!-- 16x9 -->
 
     <Window.Resources>
         <converters:DollarConverter x:Key="DollarConverter"/>
@@ -17,7 +17,7 @@
         
         <CollectionViewSource Source="{Binding StreamQuotes}" x:Key="GridItems">
             <CollectionViewSource.SortDescriptions>
-                <scm:SortDescription PropertyName="Timestamp" Direction="Descending"/>
+                <scm:SortDescription PropertyName="Symbol" Direction="Ascending"/>
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
     </Window.Resources>
@@ -80,6 +80,7 @@
                         <TextBlock Text="{Binding TabTitle}" MouseLeftButtonDown="TabHeader_OnLeftClick">
                             <TextBlock.ContextMenu>
                                 <ContextMenu>
+                                    <MenuItem Header="View on Google" Click="GoogleMenuItem_Click" />
                                     <MenuItem Header="Close" Click="CloseMenuItem_Click" />
                                 </ContextMenu>
                             </TextBlock.ContextMenu>
@@ -117,6 +118,8 @@
                     <DataGrid CanUserSortColumns="True" AutoGenerateColumns="False" ItemsSource="{Binding Source={StaticResource GridItems}}">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Symbol" Binding="{Binding Symbol}" SortMemberPath="Symbol" CanUserSort="True" IsReadOnly="True" Width="100" />
+                            <DataGridTextColumn Header="Last Price" Binding="{Binding LastPrice, Converter={StaticResource DollarConverter}}" SortMemberPath="LastPrice" CanUserSort="True" IsReadOnly="True" Width="100" />
+                            <DataGridTextColumn Header="Volume" Binding="{Binding Volume, Converter={StaticResource NumberConverter}}" SortMemberPath="Volume" CanUserSort="True" IsReadOnly="True" Width="100" />
                             <DataGridTextColumn Header="Ask" Binding="{Binding Ask, Converter={StaticResource DollarConverter}}" SortMemberPath="Ask" CanUserSort="True" IsReadOnly="True" Width="100" />
                             <DataGridTextColumn Header="Bid" Binding="{Binding Bid, Converter={StaticResource DollarConverter}}" SortMemberPath="Bid" CanUserSort="True" IsReadOnly="True" Width="100" />
                             <DataGridTextColumn Header="Ask Size" Binding="{Binding Asksz, Converter={StaticResource NumberConverter}}" SortMemberPath="Asksz" CanUserSort="True" IsReadOnly="True" Width="100" />

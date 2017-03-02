@@ -22,6 +22,7 @@ namespace TradeKing.API.Requests
         private StreamReader _streamReader;
         private List<string> _tickers;
         private StringBuilder _stringBuilder;
+        private object _lock = new object();
 
         public QuoteStreamRequest(List<string> tickers)
         {
@@ -52,7 +53,25 @@ namespace TradeKing.API.Requests
                 while (count > 0)
                 {
                     if (!_keepProcessing)
+                    {
+                        Console.WriteLine("Releasing stream resources...");
+
+                        if (_response != null)
+                        {
+                            _response.Close();
+                            _response.Dispose();
+                            _response = null;
+                        }
+
+                        if (_streamReader != null)
+                        {
+                            _streamReader.Close();
+                            _streamReader.Dispose();
+                            _streamReader = null;
+                        }
+
                         break;
+                    }
 
                     var str = new string(read, 0, count).Replace("<status>connected</status>", "");
                     if (!string.IsNullOrWhiteSpace(str))
@@ -174,24 +193,29 @@ namespace TradeKing.API.Requests
 
         public void CloseStream()
         {
-            if (_isClosed)
-                return;
-
-            _keepProcessing = false;
-            _isClosed = true;
-
-            if (_response != null)
+            lock (_lock)
             {
-                _response.Close();
-                _response.Dispose();
-                _response = null;
-            }
+                if (_isClosed)
+                    return;
 
-            if (_streamReader != null)
-            {
-                _streamReader.Close();
-                _streamReader.Dispose();
-                _streamReader = null;
+                _keepProcessing = false;
+
+                if (_response != null)
+                {
+                    _response.Close();
+                    _response.Dispose();
+                    _response = null;
+                }
+
+                if (_streamReader != null)
+                {
+                    _streamReader.Close();
+                    _streamReader.Dispose();
+                    _streamReader = null;
+                }
+
+                _tickers = null;
+                _isClosed = true;
             }
         }
     }

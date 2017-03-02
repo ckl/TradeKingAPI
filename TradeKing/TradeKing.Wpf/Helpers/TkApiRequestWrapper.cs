@@ -18,50 +18,68 @@ namespace TradeKing.Wpf.Helpers
     public class TkApiRequestWrapper
     {
         private static QuoteStreamRequest _quoteStreamRequest;
+        private static bool _cancelingStream = false;
         //private static CancellationToken _cancelToken;
         //private static CancellationTokenSource _cancelTokenSource;
 
         public static async void ExecuteStreamRequest(List<string> tickers, Action<List<StreamDataItem>> callback)
         {
+
             _quoteStreamRequest = new QuoteStreamRequest(tickers);
 
             try
             {
+                _cancelingStream = false;
+
                 await _quoteStreamRequest.Execute(callback);
             }
             catch (WebException ex)
             {
                 Console.WriteLine("[Quote Stream] Web exception: " + ex.Message);
-                _quoteStreamRequest.CloseStream();
-                DoRetry(5000, tickers, callback);
+                if (_quoteStreamRequest != null)
+                    _quoteStreamRequest.CloseStream();
+
+                if (! _cancelingStream)
+                    DoRetry(5000, tickers, callback);
             }
             catch (IOException ex)
             {
                 // TK API closed the connection, cleanup and retry in 1 second
                 Console.WriteLine("[Quote Stream] IO exception: " + ex.Message);
-                _quoteStreamRequest.CloseStream();
-                DoRetry(1000, tickers, callback);
+                if (_quoteStreamRequest != null)
+                    _quoteStreamRequest.CloseStream();
+                if (! _cancelingStream)
+                    DoRetry(1000, tickers, callback);
             }
             catch (NullReferenceException ex)
             {
                 Console.WriteLine("[Quote Stream] NullReferenceException. StackTrace: " + ex.StackTrace);
-                _quoteStreamRequest.CloseStream();
-                DoRetry(1000, tickers, callback);
+                if (_quoteStreamRequest != null)
+                    _quoteStreamRequest.CloseStream();
+                if (! _cancelingStream)
+                    DoRetry(1000, tickers, callback);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(string.Format("[Quote Stream] Unhandled exception: {0} [{1}]", ex.Message, ex.GetType().ToString()));
                 Console.WriteLine();
-                _quoteStreamRequest.CloseStream();
-                DoRetry(1000, tickers, callback);
+                if (_quoteStreamRequest != null)
+                    _quoteStreamRequest.CloseStream();
+                if (! _cancelingStream)
+                    DoRetry(1000, tickers, callback);
             }
 
         }
 
         public static void CancelStreamRequest()
         {
+            _cancelingStream = true;
+
             if (_quoteStreamRequest != null)
+            {
                 _quoteStreamRequest.CloseStream();
+                _quoteStreamRequest = null;
+            }
         }
 
         private static void DoRetry(int delay, List<string> tickers, Action<List<StreamDataItem>> callback)

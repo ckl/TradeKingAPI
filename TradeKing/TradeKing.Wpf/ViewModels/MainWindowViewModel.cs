@@ -10,6 +10,7 @@ using TradeKing.API.Database;
 using TradeKing.API.Models.Streaming;
 using TradeKing.Wpf.Base;
 using TradeKing.Wpf.Helpers;
+using TradeKing.Wpf.Models;
 
 namespace TradeKing.Wpf.ViewModels
 {
@@ -18,14 +19,14 @@ namespace TradeKing.Wpf.ViewModels
         public TickerTabsViewModel TickerTabsViewModel { get; set; }
         public WatchListsViewModel WatchListsViewModel { get; set; }
         public ConsoleMessageViewModel ConsoleMessageViewModel { get; set; }
-        public ObservableCollection<Quote> StreamQuotes { get; set; }
+        public ObservableCollection<QuoteAndTrade> StreamQuotes { get; set; }
 
         public MainWindowViewModel()
         {
             TickerTabsViewModel = new TickerTabsViewModel();
             ConsoleMessageViewModel = new ConsoleMessageViewModel();
             WatchListsViewModel = new WatchListsViewModel();
-            StreamQuotes = new ObservableCollection<Quote>();
+            StreamQuotes = new ObservableCollection<QuoteAndTrade>();
 
             LoadTradeKingStuff();
         }
@@ -33,8 +34,6 @@ namespace TradeKing.Wpf.ViewModels
         private async void LoadTradeKingStuff()
         {
             await WatchListsViewModel.LoadWatchLists();
-
-            //StartStreamingData();
         }
 
         private CancellationTokenSource _tokenSource = null;
@@ -55,11 +54,7 @@ namespace TradeKing.Wpf.ViewModels
             _tokenSource = new CancellationTokenSource();
             var ct = _tokenSource.Token;
 
-            List<string> tickers;
-            using (var db = DbFactory.GetDbSource())
-            {
-                tickers = WatchListsViewModel.SelectedItem.Tickers.ToList();
-            }
+            var tickers = WatchListsViewModel.SelectedItem.Tickers.ToList();
 
             var task = Task.Factory.StartNew(() =>
             {
@@ -125,7 +120,7 @@ namespace TradeKing.Wpf.ViewModels
                         db.SaveStreamQuote(quote);
                     }
 
-                    StreamQuotes.Add(quote);
+                    UpdateStreamQuote(quote);
                 }
                 else if (item is Trade)
                 {
@@ -138,10 +133,81 @@ namespace TradeKing.Wpf.ViewModels
                     {
                         db.SaveStreamTrade(trade);
                     }
+
+                    UpdateStreamQuote(trade);
                 }
 
                 ExecuteOnMainThread(tab, item);
             }
+        }
+
+        private void UpdateStreamQuote(Quote quote)
+        {
+
+            var element = StreamQuotes.FirstOrDefault(c => c.Symbol == quote.Symbol);
+
+            if (element == null)
+            {
+                element = new QuoteAndTrade
+                {
+                    Ask = quote.Ask,
+                    Asksz = quote.Asksz,
+                    Bid = quote.Bid,
+                    Bidsz = quote.Bidsz,
+                    Datetime = quote.Datetime,
+                    Symbol = quote.Symbol,
+                    Timestamp = quote.Timestamp
+                };
+
+            }
+            else
+            {
+                element.Ask = quote.Ask;
+                element.Asksz = quote.Asksz;
+                element.Bid = quote.Bid;
+                element.Bidsz = quote.Bidsz;
+                element.Datetime = quote.Datetime;
+                element.Timestamp = quote.Timestamp;
+            }
+
+            AddStreamQuoteOnMainThread(element);
+        }
+
+        private void UpdateStreamQuote(Trade trade)
+        {
+            var element = StreamQuotes.FirstOrDefault(c => c.Symbol == trade.Symbol);
+
+            if (element == null)
+            {
+                element = new QuoteAndTrade
+                {
+                    LastPrice = trade.Last,
+                    Volume = trade.Vl,
+                    Datetime = trade.Datetime,
+                    Symbol = trade.Symbol,
+                    Timestamp = trade.Timestamp
+                };
+
+            }
+            else
+            {
+                element.LastPrice = trade.Last;
+                element.Volume = trade.Vl;
+                element.Datetime = trade.Datetime;
+                element.Timestamp = trade.Datetime;
+            }
+            AddStreamQuoteOnMainThread(element);
+        }
+
+        private void AddStreamQuoteOnMainThread(QuoteAndTrade quote)
+        {
+            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                        new Action(() =>
+                        {
+                            StreamQuotes.Remove(quote);
+                            StreamQuotes.Add(quote);
+                        }
+                        ));
         }
 
         private void ExecuteOnMainThread(TickerTabItemViewModel tab, StreamDataItem item)

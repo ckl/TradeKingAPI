@@ -27,13 +27,13 @@
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="5" />
-            <RowDefinition/>
+            <RowDefinition Height="80"/>
         </Grid.RowDefinitions>
 
         <oxy:Plot Grid.Row="0" Title="{Binding GraphTitle}" Visibility="{Binding GraphQuotes, Converter={StaticResource EmptyListVisibilityConverter}}">
             <oxy:Plot.Axes>
-                <oxy:DateTimeAxis Position="Bottom" StringFormat="HH:mm" />
-                <oxy:LinearAxis Position="Left" Minimum="{Binding xAxisMin}" Maximum="{Binding xAxisMax}" />
+                <oxy:DateTimeAxis Position="Bottom" Minimum="{Binding xAxisMin}" Maximum="{Binding xAxisMax}" StringFormat="HH:mm" />
+                <oxy:LinearAxis Position="Left" Minimum="{Binding yAxisMin}" Maximum="{Binding yAxisMax}" IntervalLength="20" />
             </oxy:Plot.Axes>
             <oxy:Plot.Series>
                 <oxy:LineSeries ItemsSource="{Binding GraphQuotes}" DataFieldX="Time" DataFieldY="Bid" StrokeThickness="1" Color="Blue"  MarkerSize="3" MarkerType="Plus" TrackerFormatString="Time: {2:yyyy-MM-dd HH:mm:ss}&#x0a;Bid: {4}"/>

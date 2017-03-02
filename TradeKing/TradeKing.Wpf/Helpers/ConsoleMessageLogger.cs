@@ -20,12 +20,12 @@ namespace TradeKing.Wpf.Helpers
             var msg = DateTime.Now + ": " + str;
             //_consoleMessageString.AppendLine(msg);
             _quoteStreamMessageString.Insert(0, msg + Environment.NewLine);
-            Console.WriteLine(msg);
+            //Console.WriteLine(msg);
             _viewModel.NotifyPropertyChanged("QuoteStreamMessages");
         }
 
         private static object myLock = new object();
-        private static volatile ConsoleMessageLogger myLogger = null; // 'volatile' is unnecessary in .NET 2.0 and later
+        private static ConsoleMessageLogger myLogger = null; 
         private ConsoleMessageViewModel _viewModel = null;
 
         private StringBuilder _consoleMessageString = new StringBuilder();

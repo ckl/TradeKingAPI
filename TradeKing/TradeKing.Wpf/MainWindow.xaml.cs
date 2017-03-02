@@ -61,7 +61,18 @@ namespace TradeKing.Wpf
                 return;
 
             _viewModel.CancelStream();
+            _viewModel.StreamQuotes.Clear();
             _viewModel.StartStreamingData();
+
+        }
+
+        private void GoogleMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var vm = (sender as MenuItem).DataContext as TickerTabItemViewModel;
+            if (vm == null)
+                return;
+
+            System.Diagnostics.Process.Start("https://www.google.com/finance?q=" + vm.Ticker);
         }
     }
 }
