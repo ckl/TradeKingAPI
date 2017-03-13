@@ -83,7 +83,6 @@ namespace TradeKing.Wpf.ViewModels
             //}
 
             task.Wait();
-            Console.WriteLine("Test 123");
         }
 
         public void CancelStream()
